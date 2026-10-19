@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pilketos SMP 2026</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{h:['"Baloo 2"','system-ui','sans-serif'],b:['Nunito','system-ui','sans-serif']}}}}</script>
+<style>
+body{font-family:Nunito,system-ui,sans-serif;background:#eef2ff;color:#1e1b4b}
+h1,h2,h3,.fh{font-family:"Baloo 2",system-ui,sans-serif}
+.blob{position:absolute;border-radius:50%;filter:blur(40px);opacity:.55;animation:fl 9s ease-in-out infinite}
+@keyframes fl{50%{transform:translate(30px,-25px) scale(1.1)}}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(12px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes glow{50%{box-shadow:0 0 0 10px rgba(250,204,21,.0),0 0 28px 6px rgba(250,204,21,.65)}}
+@keyframes wob{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.pop{animation:pop .3s ease backwards}.rise{animation:rise .45s ease backwards}
+.shim{position:relative;overflow:hidden}
+.shim::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%);animation:sh 2.2s infinite}
+@keyframes sh{to{transform:translateX(100%)}}
+.glow{animation:glow 2.4s ease-in-out infinite}
+.tilt{transition:transform .15s ease-out,box-shadow .2s;transform-style:preserve-3d;will-change:transform}
+.tw:hover .tilt{box-shadow:0 24px 40px -12px rgba(79,70,229,.45)}
+.btn{transition:transform .12s,box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.94)}.btn:disabled:hover,.btn:disabled:active{transform:none}
+.acc-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.acc-b>div{overflow:hidden}.acc.open .acc-b{grid-template-rows:1fr}
+.acc.open .chev{transform:rotate(180deg)}.chev{transition:transform .3s}
+.bar{width:0;transition:width 1.3s cubic-bezier(.2,.8,.2,1)}
+:focus-visible{outline:3px solid #facc15;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="min-h-screen">
+<canvas id="cv" class="fixed inset-0 pointer-events-none z-[60]"></canvas>
+<div id="app"></div>
+<div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center p-3 bg-indigo-950/60 backdrop-blur-sm" data-act="close"></div>
+<div id="toastw" class="fixed inset-x-0 bottom-4 z-[70] flex justify-center px-4 pointer-events-none"><div id="toast" class="hidden bg-indigo-900 text-white px-5 py-3 rounded-full shadow-xl font-bold text-center"></div></div>
+
+<script>
+const C=[
+{id:0,n:'Aira & Bimo',s:'Sekolah Ceria',e:'🦊',g:'from-indigo-500 to-blue-500',col:'#6366f1',
+ visi:'Menjadikan sekolah tempat belajar yang menyenangkan, aman, dan penuh prestasi.',
+ misi:['Mengadakan kelas belajar kelompok setiap Jumat siang.','Membuat kotak aspirasi digital untuk semua siswa.','Menggelar lomba antar kelas tiap bulan.'],
+ p:{Akademik:'Klub belajar bareng kakak kelas',Olahraga:'Turnamen futsal & voli antar kelas',Lingkungan:'Gerakan 1 siswa 1 tanaman',Teknologi:'Mading digital sekolah'}},
+{id:1,n:'Citra & Dika',s:'Gerak Kreatif',e:'🦄',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
+ visi:'Mewadahi bakat setiap siswa lewat seni, musik, dan karya kreatif.',
+ misi:['Membuka panggung seni setiap akhir bulan.','Membentuk klub film pendek dan podcast sekolah.','Mengadakan bazar karya siswa.'],
+ p:{Akademik:'Pameran proyek sains siswa',Olahraga:'Senam kreatif tiap Sabtu pagi',Lingkungan:'Seni daur ulang dari sampah plastik',Teknologi:'Podcast & radio sekolah'}},
+{id:2,n:'Eka & Fajar',s:'Peduli Bersama',e:'🐯',g:'from-amber-400 to-orange-500',col:'#f59e0b',
+ visi:'Membangun sekolah yang saling peduli, bersih, dan bebas perundungan.',
+ misi:['Membentuk tim sahabat anti-bullying.','Mengadakan aksi bersih sekolah dua minggu sekali.','Menggalang donasi buku dan alat tulis.'],
+ p:{Akademik:'Bank buku & alat tulis bersama',Olahraga:'Jalan sehat dan lomba kebersihan',Lingkungan:'Bank sampah dan kantin bebas plastik',Teknologi:'Formulir lapor perundungan anonim'}}
+];
+const $=s=>document.querySelector(s), app=$('#app'), md=$('#modal');
+let S={view:'login',nisn:'',votes:[12,9,7],voted:{}}, tab='vote';
+try{const d=JSON.parse(localStorage.getItem('pk')||'null');if(d){S.votes=d.votes;S.voted=d.voted}}catch(e){}
+const save=()=>{try{localStorage.setItem('pk',JSON.stringify({votes:S.votes,voted:S.voted}))}catch(e){}};
+const tot=()=>S.votes.reduce((a,b)=>a+b,0);
+const myVote=()=>S.voted[S.nisn];
+const hasVoted=()=>myVote()!==undefined;
+const phrases=['Satu suara, satu perubahan!','Pilih ketua OSIS idamanmu!','Suaramu menentukan masa depan sekolah!'];
+let pi=0;
+setInterval(()=>{const el=$('#ph');if(!el)return;pi=(pi+1)%phrases.length;el.style.opacity=0;setTimeout(()=>{el.textContent=phrases[pi];el.style.opacity=1},300)},2800);
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.remove('hidden');e.classList.add('pop');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.add('hidden'),2500)}
+
+function header(){
+ const t=(k,l)=>`<button data-act="tab" data-id="${k}" class="btn px-4 py-2 rounded-full font-bold ${tab===k?'bg-yellow-300 text-indigo-900':'text-white hover:bg-white/20'}">${l}</button>`;
+ return `<header class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white sticky top-0 z-30 shadow-lg">
+ <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-2 flex-wrap">
+  <div class="fh text-xl font-extrabold flex items-center gap-2"><span class="text-2xl" style="display:inline-block;animation:wob 3s infinite">🗳️</span>Pilketos SMP</div>
+  <nav class="flex gap-1">${t('vote',S.view==='login'?'Beranda':'Pilih')}${t('result','Hasil')}${S.view==='login'?'':`<button data-act="logout" class="btn px-4 py-2 rounded-full font-bold text-white hover:bg-white/20">Keluar</button>`}</nav>
+ </div></header>`;
+}
+
+function login(){
+ return `<section class="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-600 text-white">
+ <div class="blob w-72 h-72 bg-yellow-300 -top-10 -left-10"></div><div class="blob w-80 h-80 bg-fuchsia-400 bottom-0 right-0" style="animation-delay:-4s"></div>
+ <div class="relative max-w-5xl mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center">
+  <div class="rise">
+   <p class="inline-block bg-white/20 rounded-full px-4 py-1 font-bold mb-4">Pemilihan Ketua OSIS 2026</p>
+   <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">Gunakan Hak <span class="text-yellow-300">Suaramu!</span></h1>
+   <p id="ph" class="mt-4 text-xl text-indigo-100 transition-opacity duration-300">${phrases[0]}</p>
+   <div class="mt-6 flex gap-3 text-4xl"><span style="animation:wob 2.5s infinite">🦊</span><span style="animation:wob 2.5s .4s infinite">🦄</span><span style="animation:wob 2.5s .8s infinite">🐯</span></div>
+  </div>
+  <form id="lf" class="rise bg-white text-indigo-950 rounded-3xl p-6 md:p-8 shadow-2xl" style="animation-delay:.15s">
+   <h2 class="text-2xl font-extrabold">Masuk sebagai pemilih</h2>
+   <p class="text-slate-500 mb-4">Masukkan NISN (10 angka) milikmu.</p>
+   <label for="nisn" class="font-bold">NISN / Kode Pemilih</label>
+   <input id="nisn" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="contoh: 0123456789" class="w-full mt-1 px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none text-lg tracking-widest transition">
+   <p id="err" class="text-rose-600 font-bold h-6 mt-1"></p>
+   <button class="btn w-full mt-2 py-3 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-indigo-900 font-extrabold text-lg shadow-lg">Mulai Memilih</button>
+   <p class="text-xs text-slate-400 mt-3">Demo: angka 10 digit apa saja diterima. Satu NISN hanya bisa memilih sekali.</p>
+  </form></div></section>`;
+}
+
+function card(c,i){
+ const dis=hasVoted(), mine=myVote()===c.id;
+ return `<div class="tw" style="perspective:900px"><article class="tilt rise bg-white rounded-3xl p-4 shadow-lg ${mine?'ring-4 ring-yellow-300':''}" style="animation-delay:${i*.1}s">
+  <div class="shim h-44 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center relative">
+   <div class="glow w-24 h-24 rounded-full bg-white/90 flex items-center justify-center text-6xl">${c.e}</div>
+   <span class="absolute top-3 left-3 bg-white/90 text-indigo-900 font-extrabold rounded-full w-9 h-9 flex items-center justify-center">${i+1}</span>
+   <button data-act="video" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">▶ Video</button>
+  </div>
+  <h3 class="text-2xl font-extrabold mt-3">${c.n}</h3>
+  <p class="text-indigo-600 font-bold">"${c.s}"</p>
+  <div class="mt-4 grid gap-2">
+   <button data-act="visi" data-id="${c.id}" class="btn py-2 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold">Lihat Visi & Misi</button>
+   <button data-act="ask" data-id="${c.id}" ${dis?'disabled':''} class="btn py-3 rounded-xl font-extrabold ${dis?(mine?'bg-yellow-300 text-indigo-900':'bg-slate-200 text-slate-400 cursor-not-allowed'):'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md'}">${mine?'✓ Pilihanmu':dis?'Sudah memilih':'Pilih Paslon '+(i+1)}</button>
+  </div></article></div>`;
+}
+
+function voteView(){
+ const thanks=hasVoted()?`<div class="pop mb-6 bg-gradient-to-r from-yellow-300 to-amber-300 rounded-3xl p-6 text-center shadow-lg">
+  <div class="text-5xl">🎉</div><h2 class="text-3xl font-extrabold mt-1">Terima Kasih Sudah Memilih!</h2>
+  <p class="font-bold">Kamu memilih ${C[myVote()].n}. Suaramu sudah tercatat dan tidak bisa diubah.</p>
+  <button data-act="tab" data-id="result" class="btn mt-3 px-5 py-2 rounded-full bg-indigo-700 text-white font-bold">Lihat hasil sementara</button></div>`:'';
+ return `<main class="max-w-6xl mx-auto px-4 py-8">${thanks}
+  <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+   <div><h2 class="text-3xl font-extrabold">Kenali Paslonmu</h2><p class="text-slate-600">Halo, NISN ${S.nisn}. Baca visi misi sebelum memilih ya!</p></div>
+   <button data-act="compare" class="btn px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-md">⚖️ Bandingkan Paslon</button>
+  </div>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">${C.map(card).join('')}</div></main>`;
+}
+
+function resultView(){
+ const T=tot()||1, max=Math.max(...S.votes);
+ const pct=C.map((c,i)=>Math.round(S.votes[i]/T*100));
+ let a=0;const stops=C.map((c,i)=>{const s=a;a+=S.votes[i]/T*100;return `${c.col} ${s}% ${a}%`}).join(',');
+ return `<main class="max-w-4xl mx-auto px-4 py-8">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+   <div><h2 class="text-3xl font-extrabold">Hasil Sementara</h2><p class="text-slate-600">Total suara masuk: <b id="tt">${tot()}</b></p></div>
+   <div class="flex gap-2"><button data-act="sim" class="btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow">🎲 Simulasi suara</button>
+   <button data-act="reset" class="btn px-4 py-2 rounded-xl bg-white text-indigo-800 font-bold shadow">Reset demo</button></div>
+  </div>
+  <div class="grid md:grid-cols-[1fr_200px] gap-6 items-center bg-white rounded-3xl p-5 md:p-7 shadow-lg">
+   <div class="space-y-5">${C.map((c,i)=>`<div>
+    <div class="flex justify-between items-center font-bold"><span>${c.e} ${c.n} ${S.votes[i]===max&&tot()>0?'👑':''}</span><span><span class="cnt" data-v="${S.votes[i]}">0</span> suara · ${pct[i]}%</span></div>
+    <div class="h-6 bg-indigo-100 rounded-full overflow-hidden mt-1"><div class="bar h-full rounded-full shim" data-w="${pct[i]}" style="background:${c.col}"></div></div></div>`).join('')}</div>
+   <div class="mx-auto w-44 h-44 rounded-full relative" style="background:conic-gradient(${stops})"><div class="absolute inset-6 rounded-full bg-white flex flex-col items-center justify-center"><b class="text-3xl fh">${tot()}</b><span class="text-xs text-slate-500">suara</span></div></div>
+  </div></main>`;
+}
+
+function render(){
+ app.innerHTML=header()+(S.view==='login'&&tab!=='result'?login():tab==='result'?resultView():voteView());
+ if(tab==='result')requestAnimationFrame(()=>setTimeout(animResult,50));
+ const f=$('#lf');if(f){f.onsubmit=doLogin;$('#nisn').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'');$('#err').textContent='';e.target.classList.remove('border-rose-500')}}
+ document.querySelectorAll('.tw').forEach(w=>{const el=w.firstElementChild;
+  w.onmousemove=e=>{const r=w.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};
+  w.onmouseleave=()=>el.style.transform='';
+ });
+}
+function animResult(){
+ document.querySelectorAll('.bar').forEach(b=>b.style.width=b.dataset.w+'%');
+ document.querySelectorAll('.cnt').forEach(el=>{const v=+el.dataset.v,t0=performance.now();(function s(t){const p=Math.min((t-t0)/1200,1);el.textContent=Math.round(v*p);if(p<1)requestAnimationFrame(s)})(t0)});
+}
+
+function doLogin(e){
+ e.preventDefault();const v=$('#nisn').value.trim();
+ if(!/^\d{10}$/.test(v)){$('#err').textContent='NISN harus 10 angka.';$('#nisn').classList.add('border-rose-500');$('#nisn').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250,iterations:2});return}
+ S.nisn=v;S.view='vote';tab='vote';render();
+ if(hasVoted())toast('NISN ini sudah memilih. Satu suara per siswa.');else toast('Selamat datang! Pilih paslon favoritmu 🎉');
+}
+
+function openM(html){md.innerHTML=html;md.classList.remove('hidden');md.classList.add('flex');const b=md.querySelector('button');if(b)b.focus()}
+function closeM(){md.classList.add('hidden');md.classList.remove('flex')}
+const box=(inner,w='max-w-lg')=>`<div class="pop bg-white rounded-3xl w-full ${w} max-h-[90vh] overflow-auto p-5 md:p-7 relative" data-act="stop">
+ <button data-act="close" aria-label="Tutup" class="btn absolute top-3 right-3 w-9 h-9 rounded-full bg-indigo-100 text-indigo-800 font-bold">✕</button>${inner}</div>`;
+
+function visiModal(c){
+ const item=(t,b,o)=>`<div class="acc ${o?'open':''} border-2 border-indigo-100 rounded-2xl mb-2 overflow-hidden"><button data-act="acc" class="w-full flex justify-between items-center px-4 py-3 font-bold text-left bg-indigo-50"><span>${t}</span><span class="chev">▾</span></button><div class="acc-b"><div><p class="px-4 py-3">${b}</p></div></div></div>`;
+ openM(box(`<div class="flex items-center gap-3 mb-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center text-3xl">${c.e}</div><div><h3 class="text-2xl font-extrabold">${c.n}</h3><p class="text-indigo-600 font-bold">"${c.s}"</p></div></div>
+ ${item('🎯 Visi',c.visi,1)}${c.misi.map((m,i)=>item('Misi '+(i+1),m)).join('')}${item('📌 Program unggulan',Object.entries(c.p).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>'))}`));
+}
+function compareModal(){
+ openM(box(`<h3 class="text-2xl font-extrabold mb-1">Bandingkan Paslon</h3><p class="text-slate-500 mb-4">Program kerja utama berdampingan.</p>
+ <div class="overflow-x-auto"><div class="grid min-w-[620px] gap-2" style="grid-template-columns:90px repeat(3,1fr)">
+  <div></div>${C.map(c=>`<div class="rounded-2xl p-3 text-center text-white font-extrabold bg-gradient-to-br ${c.g}"><div class="text-3xl">${c.e}</div>${c.n}</div>`).join('')}
+  <div class="font-bold self-center">Visi</div>${C.map(c=>`<div class="bg-indigo-50 rounded-xl p-3 text-sm">${c.visi}</div>`).join('')}
+  ${Object.keys(C[0].p).map(k=>`<div class="font-bold self-center">${k}</div>`+C.map(c=>`<div class="bg-indigo-50 hover:bg-yellow-100 transition rounded-xl p-3 text-sm">${c.p[k]}</div>`).join('')).join('')}
+ </div></div>`,'max-w-4xl'));
+}
+function videoModal(c){
+ openM(box(`<h3 class="text-xl font-extrabold mb-3">Video perkenalan ${c.n}</h3>
+ <div class="shim aspect-video rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center"><div class="glow w-20 h-20 rounded-full bg-white/90 flex items-center justify-center text-4xl text-indigo-700">▶</div></div>
+ <p class="text-slate-500 text-sm mt-3">Tempat video. Ganti dengan tag &lt;iframe&gt; atau &lt;video&gt; milikmu.</p>`));
+}
+function askModal(c){
+ openM(box(`<div class="text-center"><div class="text-6xl">${c.e}</div><h3 class="text-2xl font-extrabold mt-2">Apakah kamu yakin memilih ${c.n}?</h3>
+ <p class="text-slate-600 mt-1">Pilihan tidak bisa diubah setelah dikirim.</p>
+ <div class="grid grid-cols-2 gap-3 mt-5"><button data-act="close" class="btn py-3 rounded-xl bg-slate-200 font-bold">Belum, kembali</button>
+ <button data-act="yes" data-id="${c.id}" class="btn py-3 rounded-xl bg-indigo-600 text-white font-extrabold shadow-md">Ya, saya yakin</button></div></div>`));
+}
+function doVote(id){
+ if(hasVoted())return;
+ S.votes[id]++;S.voted[S.nisn]=id;save();closeM();render();confetti();
+ openM(box(`<div class="text-center"><div class="text-6xl" style="animation:wob 1s 2">🎉</div><h3 class="text-3xl font-extrabold mt-2">Terima Kasih Sudah Memilih!</h3>
+ <p class="text-slate-600 mt-2">Suaramu untuk <b>${C[id].n}</b> sudah tercatat.</p>
+ <button data-act="close" class="btn mt-5 px-6 py-3 rounded-xl bg-yellow-300 text-indigo-900 font-extrabold">Selesai</button></div>`));
+}
+
+/* confetti */
+const cv=$('#cv'),cx=cv.getContext('2d');let P=[];
+function sz(){cv.width=innerWidth;cv.height=innerHeight}sz();addEventListener('resize',sz);
+function confetti(){
+ const cols=['#facc15','#6366f1','#3b82f6','#a855f7','#f472b6','#34d399'];
+ for(let b=0;b<3;b++){const x=innerWidth*(.2+b*.3);for(let i=0;i<70;i++){const a=Math.random()*Math.PI*2,v=4+Math.random()*9;P.push({x,y:innerHeight*.45,vx:Math.cos(a)*v,vy:Math.sin(a)*v-5,c:cols[i%6],s:5+Math.random()*6,r:Math.random()*6,l:110})}}
+ if(P.length<=210)loop();
+}
+function loop(){
+ cx.clearRect(0,0,cv.width,cv.height);
+ P=P.filter(p=>p.l>0);
+ P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.25;p.vx*=.99;p.r+=.2;p.l--;cx.save();cx.globalAlpha=Math.min(1,p.l/30);cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);cx.restore()});
+ if(P.length)requestAnimationFrame(loop);else cx.clearRect(0,0,cv.width,cv.height);
+}
+
+/* events */
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-act]');if(!el)return;
+ const a=el.dataset.act,id=+el.dataset.id,c=C[id];
+ if(a==='stop')return;
+ if(a==='close'){if(el===md&&e.target!==md)return;closeM()}
+ else if(a==='tab'){tab=el.dataset.id;render()}
+ else if(a==='logout'){S.view='login';S.nisn='';tab='vote';render()}
+ else if(a==='visi')visiModal(c);
+ else if(a==='compare')compareModal();
+ else if(a==='video')videoModal(c);
+ else if(a==='ask')askModal(c);
+ else if(a==='yes')doVote(id);
+ else if(a==='acc')el.parentElement.classList.toggle('open');
+ else if(a==='sim'){for(let i=0;i<10;i++)S.votes[Math.floor(Math.random()*3)]++;save();render()}
+ else if(a==='reset'){S.votes=[12,9,7];S.voted={};save();toast('Data demo direset');render()}
+});
+addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+render();
+</script>
+</body>
+</html>
