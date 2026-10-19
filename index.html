@@ -58,13 +58,39 @@ const C=[
  misi:['Membentuk tim sahabat anti-bullying.','Mengadakan aksi bersih sekolah dua minggu sekali.','Menggalang donasi buku dan alat tulis.'],
  p:{Akademik:'Bank buku & alat tulis bersama',Olahraga:'Jalan sehat dan lomba kebersihan',Lingkungan:'Bank sampah dan kantin bebas plastik',Teknologi:'Formulir lapor perundungan anonim'}}
 ];
+const M=[
+{id:0,n:'Galih Pratama',kelas:'Kelas 8A',s:'Suara Kelas, Suara Kita',e:'🦁',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
+ visi:'Menjadikan MPK jembatan aspirasi yang didengar oleh seluruh kelas.',
+ misi:['Menampung aspirasi tiap kelas setiap bulan.','Menyampaikan hasil rapat MPK secara terbuka.','Membantu pengurus kelas menyelesaikan masalah.'],
+ p:{Aspirasi:'Kotak aspirasi di setiap kelas',Pengawasan:'Laporan kerja OSIS tiap semester',Kegiatan:'Rapat perwakilan kelas rutin',Komunikasi:'Papan info MPK di lorong'}},
+{id:1,n:'Hana Maharani',kelas:'Kelas 8B',s:'Aspirasi Tanpa Batas',e:'🐬',g:'from-emerald-500 to-teal-500',col:'#10b981',
+ visi:'Membangun MPK yang aktif, terbuka, dan dekat dengan semua siswa.',
+ misi:['Mengadakan forum curhat dan usul siswa.','Mengawasi program OSIS agar sesuai janji.','Melatih perwakilan kelas berbicara dan memimpin.'],
+ p:{Aspirasi:'Forum usul siswa tiap bulan',Pengawasan:'Rapor program kerja OSIS',Kegiatan:'Pelatihan public speaking perwakilan',Komunikasi:'Akun info MPK sekolah'}},
+{id:2,n:'Ivan Nugroho',kelas:'Kelas 8C',s:'Tegas, Adil, Peduli',e:'🦅',g:'from-rose-500 to-pink-500',col:'#f43f5e',
+ visi:'MPK yang tegas dan adil dalam mengawasi serta membela kepentingan siswa.',
+ misi:['Menegakkan keadilan dalam setiap keputusan.','Mengawal aspirasi sampai ada tindak lanjut.','Menjaga kekompakan antar kelas.'],
+ p:{Aspirasi:'Tindak lanjut aspirasi maksimal 2 minggu',Pengawasan:'Evaluasi kegiatan OSIS terbuka',Kegiatan:'Lomba kekompakan antar kelas',Komunikasi:'Rekap hasil rapat di mading'}}
+];
+const E=k=>k==='m'?M:C;
 const $=s=>document.querySelector(s), app=$('#app'), md=$('#modal');
-let S={view:'login',nisn:'',votes:[12,9,7],voted:{}}, tab='vote';
-try{const d=JSON.parse(localStorage.getItem('pk')||'null');if(d){S.votes=d.votes;S.voted=d.voted}}catch(e){}
-const save=()=>{try{localStorage.setItem('pk',JSON.stringify({votes:S.votes,voted:S.voted}))}catch(e){}};
-const tot=()=>S.votes.reduce((a,b)=>a+b,0);
+/* ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT (berakhiran /exec). Kosong = mode demo (data lokal browser). */
+const API='';
+let S={view:'login',nisn:'',votes:{o:[12,9,7],m:[10,11,7]},voted:{},me:null,res:null,key:'',busy:0,pick:{o:null,m:null}}, tab='vote', RISE='rise';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(path,body){
+ const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+ try{const r=await fetch(body?API:API+path,body?{method:'POST',body:JSON.stringify(body),signal:ctl.signal}:{signal:ctl.signal});return await r.json()}
+ catch(e){return {ok:false,error:'JARINGAN'}}finally{clearTimeout(t)}
+}
+const ERR={TIDAK_TERDAFTAR:'NISN/NIP tidak terdaftar. Tanya panitia ya.',DITUTUP:'Pemilihan belum dibuka atau sudah ditutup.',JARINGAN:'Koneksi bermasalah. Coba lagi.',SIBUK:'Server sedang ramai. Coba lagi sebentar.'};
+try{const d=JSON.parse(localStorage.getItem('pk2')||'null');if(d){S.votes=d.votes;S.voted=d.voted}}catch(e){}
+const save=()=>{try{localStorage.setItem('pk2',JSON.stringify({votes:S.votes,voted:S.voted}))}catch(e){}};
+const V=(k='o')=>API?((S.res&&!S.res.locked)?(k==='m'?S.res.votesMpk:S.res.votes):[0,0,0]):S.votes[k];
+const tot=(k='o')=>V(k).reduce((a,b)=>a+b,0);
 const myVote=()=>S.voted[S.nisn];
 const hasVoted=()=>myVote()!==undefined;
+const mv=()=>{const v=myVote();return v&&typeof v==='object'?v:null};
 const phrases=['Satu suara, satu perubahan!','Pilih ketua OSIS idamanmu!','Suaramu menentukan masa depan sekolah!'];
 let pi=0;
 setInterval(()=>{const el=$('#ph');if(!el)return;pi=(pi+1)%phrases.length;el.style.opacity=0;setTimeout(()=>{el.textContent=phrases[pi];el.style.opacity=1},300)},2800);
@@ -86,68 +112,90 @@ function login(){
  <div class="relative max-w-5xl mx-auto px-4 py-12 md:py-20 grid md:grid-cols-2 gap-10 items-center">
   <div class="rise">
    <div class="flex items-center gap-3 mb-5">${lg('smp','h-20 w-16 object-contain bg-white rounded-2xl p-1.5 shadow-lg','Logo SMP Negeri 3 Kaliwungu')}${lg('osis','h-20 w-20 object-contain bg-white rounded-2xl p-1.5 shadow-lg','Logo OSIS')}${lg('kpo','h-20 w-[72px] object-contain rounded-2xl shadow-lg','Logo Komisi Pemilihan OSIS')}</div>
-   <p class="inline-block bg-white/20 rounded-full px-4 py-1 font-bold mb-4">Pemilihan Ketua OSIS 2026</p>
+   <p class="inline-block bg-white/20 rounded-full px-4 py-1 font-bold mb-4">Pemilihan Ketua OSIS & Ketua MPK 2026</p>
    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight">Gunakan Hak <span class="text-yellow-300">Suaramu!</span></h1>
    <p id="ph" class="mt-4 text-xl text-indigo-100 transition-opacity duration-300">${phrases[0]}</p>
    <div class="mt-6 flex gap-3 text-4xl"><span style="animation:wob 2.5s infinite">🦊</span><span style="animation:wob 2.5s .4s infinite">🦄</span><span style="animation:wob 2.5s .8s infinite">🐯</span></div>
   </div>
   <form id="lf" class="rise bg-white text-indigo-950 rounded-3xl p-6 md:p-8 shadow-2xl" style="animation-delay:.15s">
    <h2 class="text-2xl font-extrabold">Masuk sebagai pemilih</h2>
-   <p class="text-slate-500 mb-4">Masukkan NISN (10 angka) milikmu.</p>
-   <label for="nisn" class="font-bold">NISN / Kode Pemilih</label>
-   <input id="nisn" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="contoh: 0123456789" class="w-full mt-1 px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none text-lg tracking-widest transition">
+   <p class="text-slate-500 mb-4">Siswa pakai NISN (10 angka). Guru pakai NIP (18 angka).</p>
+   <label for="nisn" class="font-bold">NISN (siswa) / NIP (guru)</label>
+   <input id="nisn" inputmode="numeric" autocomplete="off" placeholder="10 angka NISN atau 18 angka NIP" class="w-full mt-1 px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none text-lg tracking-wider transition">
    <p id="err" class="text-rose-600 font-bold h-6 mt-1"></p>
    <button class="btn w-full mt-2 py-3 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-indigo-900 font-extrabold text-lg shadow-lg">Mulai Memilih</button>
-   <p class="text-xs text-slate-400 mt-3">Demo: angka 10 digit apa saja diterima. Satu NISN hanya bisa memilih sekali.</p>
+   <p class="text-xs text-slate-400 mt-3">${API?'Gunakan NISN atau NIP yang terdaftar. Satu nomor hanya bisa memilih sekali.':'Demo: angka 10 digit (NISN) atau 18 digit (NIP) apa saja diterima. Satu nomor hanya bisa memilih sekali.'}</p>
   </form></div></section>`;
 }
 
-function card(c,i){
- const dis=hasVoted(), mine=myVote()===c.id;
- return `<div class="tw" style="perspective:900px"><article class="tilt rise bg-white rounded-3xl p-4 shadow-lg ${mine?'ring-4 ring-yellow-300':''}" style="animation-delay:${i*.1}s">
+function card(c,i,k){
+ const dis=hasVoted(),v=mv(),mine=!!(v&&v[k]===c.id),sel=S.pick[k]===c.id,lab=(k==='m'?'Pilih Calon ':'Pilih Paslon ')+(i+1);
+ return `<div class="tw" style="perspective:900px"><article class="tilt ${RISE} bg-white rounded-3xl p-4 shadow-lg ${mine||sel?'ring-4 ring-yellow-300':''}" style="animation-delay:${i*.1}s">
   <div class="shim h-44 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center relative">
    <div class="glow w-24 h-24 rounded-full bg-white/90 flex items-center justify-center text-6xl">${c.e}</div>
    <span class="absolute top-3 left-3 bg-white/90 text-indigo-900 font-extrabold rounded-full w-9 h-9 flex items-center justify-center">${i+1}</span>
-   <button data-act="video" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">▶ Video</button>
+   <button data-act="video" data-k="${k}" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">▶ Video</button>
   </div>
-  <h3 class="text-2xl font-extrabold mt-3">${c.n}</h3>
+  <h3 class="text-2xl font-extrabold mt-3">${c.n}</h3>${c.kelas?`<p class="text-sm font-bold text-slate-500">${c.kelas}</p>`:''}
   <p class="text-indigo-600 font-bold">"${c.s}"</p>
   <div class="mt-4 grid gap-2">
-   <button data-act="visi" data-id="${c.id}" class="btn py-2 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold">Lihat Visi & Misi</button>
-   <button data-act="ask" data-id="${c.id}" ${dis?'disabled':''} class="btn py-3 rounded-xl font-extrabold ${dis?(mine?'bg-yellow-300 text-indigo-900':'bg-slate-200 text-slate-400 cursor-not-allowed'):'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md'}">${mine?'✓ Pilihanmu':dis?'Sudah memilih':'Pilih Paslon '+(i+1)}</button>
+   <button data-act="visi" data-k="${k}" data-id="${c.id}" class="btn py-2 rounded-xl bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold">Lihat Visi & Misi</button>
+   <button data-act="pick" data-k="${k}" data-id="${c.id}" ${dis?'disabled':''} class="btn py-3 rounded-xl font-extrabold ${mine||sel?'bg-yellow-300 text-indigo-900 shadow-md':dis?'bg-slate-200 text-slate-400 cursor-not-allowed':'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md'}">${mine?'✓ Pilihanmu':dis?'Sudah memilih':sel?'✓ Dipilih':lab}</button>
   </div></article></div>`;
 }
 
 function voteView(){
- const thanks=hasVoted()?`<div class="pop mb-6 bg-gradient-to-r from-yellow-300 to-amber-300 rounded-3xl p-6 text-center shadow-lg">
+ const v=mv(),p=S.pick,both=p.o!=null&&p.m!=null,done=hasVoted();
+ const thanks=done?`<div class="pop mb-6 bg-gradient-to-r from-yellow-300 to-amber-300 rounded-3xl p-6 text-center shadow-lg">
   <div class="text-5xl">🎉</div><h2 class="text-3xl font-extrabold mt-1">Terima Kasih Sudah Memilih!</h2>
-  <p class="font-bold">Kamu memilih ${C[myVote()].n}. Suaramu sudah tercatat dan tidak bisa diubah.</p>
+  <p class="font-bold">${v?'Kamu memilih '+C[v.o].n+' (OSIS) dan '+M[v.m].n+' (MPK). ':''}Suaramu sudah tercatat dan tidak bisa diubah.</p>
   <button data-act="tab" data-id="result" class="btn mt-3 px-5 py-2 rounded-full bg-indigo-700 text-white font-bold">Lihat hasil sementara</button></div>`:'';
+ const chip=(t,x,ok)=>`<span class="px-3 py-1 rounded-full ${ok?'bg-indigo-100 text-indigo-800':'bg-slate-100 text-slate-400'}">${t}: ${x}</span>`;
+ const bar=done?'':`<div class="fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t-2 border-indigo-100 shadow-2xl"><div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+  <div class="text-sm font-bold flex flex-wrap gap-2">${chip('OSIS',p.o!=null?C[p.o].n:'belum dipilih',p.o!=null)}${chip('MPK',p.m!=null?M[p.m].n:'belum dipilih',p.m!=null)}</div>
+  <button data-act="review" ${both?'':'disabled'} class="btn px-6 py-3 rounded-2xl font-extrabold ${both?'bg-yellow-300 text-indigo-900 shadow-lg':'bg-slate-200 text-slate-400 cursor-not-allowed'}">Kirim Suara ✔</button></div></div>`;
+ const cmp=k=>`<button data-act="compare" data-k="${k}" class="btn px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-md">⚖️ Bandingkan</button>`;
  return `<main class="max-w-6xl mx-auto px-4 py-8">${thanks}
-  <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
-   <div><h2 class="text-3xl font-extrabold">Kenali Paslonmu</h2><p class="text-slate-600">Halo, NISN ${S.nisn}. Baca visi misi sebelum memilih ya!</p></div>
-   <button data-act="compare" class="btn px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold shadow-md">⚖️ Bandingkan Paslon</button>
-  </div>
-  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">${C.map(card).join('')}</div></main>`;
+  <p class="text-slate-600 mb-6">Halo, ${S.me?esc(S.me.nama):(S.nisn.length>10?'NIP ':'NISN ')+S.nisn}. Kamu punya <b>2 pilihan</b>: Ketua & Wakil OSIS, lalu Ketua MPK. Baca visi misi sebelum memilih ya!</p>
+  <section><div class="flex flex-wrap items-end justify-between gap-3 mb-5"><h2 class="text-3xl font-extrabold">1️⃣ Ketua & Wakil OSIS</h2>${cmp('o')}</div>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">${C.map((c,i)=>card(c,i,'o')).join('')}</div></section>
+  <section id="mpk" class="mt-14 scroll-mt-20"><div class="flex flex-wrap items-end justify-between gap-3 mb-5"><div><h2 class="text-3xl font-extrabold">2️⃣ Ketua MPK</h2><p class="text-slate-600">Majelis Perwakilan Kelas</p></div>${cmp('m')}</div>
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">${M.map((c,i)=>card(c,i,'m')).join('')}</div></section></main>${done?'':'<div class="h-24"></div>'}${bar}`;
 }
 
+function resBlock(title,list,k){
+ const v=V(k),T=tot(k)||1,max=Math.max(...v);
+ const pct=list.map((c,i)=>Math.round(v[i]/T*100));
+ let a=0;const stops=list.map((c,i)=>{const s=a;a+=v[i]/T*100;return `${c.col} ${s}% ${a}%`}).join(',');
+ return `<section class="mb-6"><h3 class="text-2xl font-extrabold mb-3">${title}</h3>
+  <div class="grid md:grid-cols-[1fr_200px] gap-6 items-center bg-white rounded-3xl p-5 md:p-7 shadow-lg">
+   <div class="space-y-5">${list.map((c,i)=>`<div>
+    <div class="flex justify-between items-center font-bold"><span>${c.e} ${c.n} ${v[i]===max&&tot(k)>0?'👑':''}</span><span><span class="cnt" data-v="${v[i]}">0</span> suara · ${pct[i]}%</span></div>
+    <div class="h-6 bg-indigo-100 rounded-full overflow-hidden mt-1"><div class="bar h-full rounded-full shim" data-w="${pct[i]}" style="background:${c.col}"></div></div></div>`).join('')}</div>
+   <div class="mx-auto w-44 h-44 rounded-full relative" style="background:conic-gradient(${stops})"><div class="absolute inset-6 rounded-full bg-white flex flex-col items-center justify-center"><b class="text-3xl fh">${tot(k)}</b><span class="text-xs text-slate-500">suara</span></div></div>
+  </div></section>`;
+}
 function resultView(){
- const T=tot()||1, max=Math.max(...S.votes);
- const pct=C.map((c,i)=>Math.round(S.votes[i]/T*100));
- let a=0;const stops=C.map((c,i)=>{const s=a;a+=S.votes[i]/T*100;return `${c.col} ${s}% ${a}%`}).join(',');
+ if(API&&(!S.res||S.res.locked))return `<main class="max-w-md mx-auto px-4 py-10"><div class="rise bg-white rounded-3xl p-8 shadow-lg text-center">
+  <div class="text-5xl">${S.res?'🔒':'⏳'}</div><h2 class="text-2xl font-extrabold mt-2">${S.res?'Hasil dikunci':'Memuat hasil…'}</h2>
+  <p class="text-slate-600 mt-1">Hasil dibuka setelah pemilihan ditutup. Panitia bisa membukanya dengan kode.</p>
+  <form id="kf" class="mt-4 grid gap-2"><input id="key" type="password" autocomplete="off" placeholder="Kode panitia" class="px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 outline-none"><button class="btn py-3 rounded-2xl bg-indigo-600 text-white font-bold">Buka hasil</button></form></div></main>`;
  return `<main class="max-w-4xl mx-auto px-4 py-8">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-   <div><h2 class="text-3xl font-extrabold">Hasil Sementara</h2><p class="text-slate-600">Total suara masuk: <b id="tt">${tot()}</b></p></div>
-   <div class="flex gap-2"><button data-act="sim" class="btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow">🎲 Simulasi suara</button>
-   <button data-act="reset" class="btn px-4 py-2 rounded-xl bg-white text-indigo-800 font-bold shadow">Reset demo</button></div>
-  </div>
-  <div class="grid md:grid-cols-[1fr_200px] gap-6 items-center bg-white rounded-3xl p-5 md:p-7 shadow-lg">
-   <div class="space-y-5">${C.map((c,i)=>`<div>
-    <div class="flex justify-between items-center font-bold"><span>${c.e} ${c.n} ${S.votes[i]===max&&tot()>0?'👑':''}</span><span><span class="cnt" data-v="${S.votes[i]}">0</span> suara · ${pct[i]}%</span></div>
-    <div class="h-6 bg-indigo-100 rounded-full overflow-hidden mt-1"><div class="bar h-full rounded-full shim" data-w="${pct[i]}" style="background:${c.col}"></div></div></div>`).join('')}</div>
-   <div class="mx-auto w-44 h-44 rounded-full relative" style="background:conic-gradient(${stops})"><div class="absolute inset-6 rounded-full bg-white flex flex-col items-center justify-center"><b class="text-3xl fh">${tot()}</b><span class="text-xs text-slate-500">suara</span></div></div>
-  </div></main>`;
+   <div><h2 class="text-3xl font-extrabold">Hasil Sementara</h2><p class="text-slate-600">Total suara masuk: <b id="tt">${tot()}</b>${API&&S.res?` · Partisipasi: <b>${S.res.sudah}/${S.res.pemilih}</b> (${Math.round(S.res.sudah/(S.res.pemilih||1)*100)}%)`:''}</p></div>
+   ${API?'':`<div class="flex gap-2"><button data-act="sim" class="btn px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow">🎲 Simulasi suara</button>
+   <button data-act="reset" class="btn px-4 py-2 rounded-xl bg-white text-indigo-800 font-bold shadow">Reset demo</button></div>`}
+  </div>${resBlock('Ketua & Wakil OSIS',C,'o')}${resBlock('Ketua MPK',M,'m')}</main>`;
 }
+async function loadRes(){
+ if(!API)return;
+ const r=await api('?action=results&key='+encodeURIComponent(S.key||''));
+ if(!r.ok){toast('Gagal memuat hasil');return}
+ const same=JSON.stringify(r)===JSON.stringify(S.res);S.res=r;
+ if(r.locked&&S.key){toast('Kode panitia salah');S.key=''}
+ if(tab==='result'&&!same)render();
+}
+setInterval(()=>{if(tab==='result')loadRes()},20000);
 
 function footer(){
  return `<footer class="mt-8 bg-indigo-950 text-indigo-100 text-center px-4 py-6"><div class="flex justify-center items-center gap-3 mb-3">${lg('smp','h-14 w-11 object-contain bg-white rounded-xl p-1','Logo SMP Negeri 3 Kaliwungu')}${lg('osis','h-14 w-14 object-contain bg-white rounded-xl p-1','Logo OSIS')}${lg('kpo','h-14 w-[50px] object-contain rounded-xl','Logo Komisi Pemilihan OSIS')}</div><p class="fh font-bold">Komisi Pemilihan OSIS</p><p class="text-sm">SMP Negeri 3 Kaliwungu · Pilketos 2026</p></footer>`;
@@ -155,7 +203,8 @@ function footer(){
 function render(){
  app.innerHTML=header()+(S.view==='login'&&tab!=='result'?login():tab==='result'?resultView():voteView())+footer();
  if(tab==='result')requestAnimationFrame(()=>setTimeout(animResult,50));
- const f=$('#lf');if(f){f.onsubmit=doLogin;$('#nisn').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'');$('#err').textContent='';e.target.classList.remove('border-rose-500')}}
+ const kf=$('#kf');if(kf)kf.onsubmit=e=>{e.preventDefault();S.key=$('#key').value;loadRes()};
+ const f=$('#lf');if(f){f.onsubmit=doLogin;$('#nisn').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,18);$('#err').textContent='';e.target.classList.remove('border-rose-500')}}
  document.querySelectorAll('.tw').forEach(w=>{const el=w.firstElementChild;
   w.onmousemove=e=>{const r=w.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};
   w.onmouseleave=()=>el.style.transform='';
@@ -166,11 +215,18 @@ function animResult(){
  document.querySelectorAll('.cnt').forEach(el=>{const v=+el.dataset.v,t0=performance.now();(function s(t){const p=Math.min((t-t0)/1200,1);el.textContent=Math.round(v*p);if(p<1)requestAnimationFrame(s)})(t0)});
 }
 
-function doLogin(e){
+async function doLogin(e){
  e.preventDefault();const v=$('#nisn').value.trim();
- if(!/^\d{10}$/.test(v)){$('#err').textContent='NISN harus 10 angka.';$('#nisn').classList.add('border-rose-500');$('#nisn').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250,iterations:2});return}
- S.nisn=v;S.view='vote';tab='vote';render();
- if(hasVoted())toast('NISN ini sudah memilih. Satu suara per siswa.');else toast('Selamat datang! Pilih paslon favoritmu 🎉');
+ if(!/^(\d{10}|\d{18})$/.test(v)){$('#err').textContent='Siswa: NISN 10 angka. Guru: NIP 18 angka.';$('#nisn').classList.add('border-rose-500');$('#nisn').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250,iterations:2});return}
+ if(API){
+  const btn=$('#lf button');btn.disabled=true;btn.textContent='Mengecek…';
+  const r=await api('?action=login&nisn='+v);
+  btn.disabled=false;btn.textContent='Mulai Memilih';
+  if(!r.ok){$('#err').textContent=ERR[r.error]||'Terjadi kesalahan. Coba lagi.';return}
+  S.me=r;if(r.voted)S.voted[v]=-1;else delete S.voted[v];
+ }
+ S.nisn=v;S.view='vote';tab='vote';S.pick={o:null,m:null};RISE='rise';render();setTimeout(()=>RISE='',1000);
+ if(hasVoted())toast('Nomor ini sudah memilih. Satu suara per pemilih.');else toast(S.me?'Selamat datang, '+S.me.nama+'! 🎉':'Selamat datang! Pilih paslon favoritmu 🎉');
 }
 
 function openM(html){md.innerHTML=html;md.classList.remove('hidden');md.classList.add('flex');const b=md.querySelector('button');if(b)b.focus()}
@@ -183,12 +239,13 @@ function visiModal(c){
  openM(box(`<div class="flex items-center gap-3 mb-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center text-3xl">${c.e}</div><div><h3 class="text-2xl font-extrabold">${c.n}</h3><p class="text-indigo-600 font-bold">"${c.s}"</p></div></div>
  ${item('🎯 Visi',c.visi,1)}${c.misi.map((m,i)=>item('Misi '+(i+1),m)).join('')}${item('📌 Program unggulan',Object.entries(c.p).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>'))}`));
 }
-function compareModal(){
- openM(box(`<h3 class="text-2xl font-extrabold mb-1">Bandingkan Paslon</h3><p class="text-slate-500 mb-4">Program kerja utama berdampingan.</p>
+function compareModal(k){
+ const L=E(k);
+ openM(box(`<h3 class="text-2xl font-extrabold mb-1">Bandingkan ${k==='m'?'Calon Ketua MPK':'Paslon OSIS'}</h3><p class="text-slate-500 mb-4">Program kerja utama berdampingan.</p>
  <div class="overflow-x-auto"><div class="grid min-w-[620px] gap-2" style="grid-template-columns:90px repeat(3,1fr)">
-  <div></div>${C.map(c=>`<div class="rounded-2xl p-3 text-center text-white font-extrabold bg-gradient-to-br ${c.g}"><div class="text-3xl">${c.e}</div>${c.n}</div>`).join('')}
-  <div class="font-bold self-center">Visi</div>${C.map(c=>`<div class="bg-indigo-50 rounded-xl p-3 text-sm">${c.visi}</div>`).join('')}
-  ${Object.keys(C[0].p).map(k=>`<div class="font-bold self-center">${k}</div>`+C.map(c=>`<div class="bg-indigo-50 hover:bg-yellow-100 transition rounded-xl p-3 text-sm">${c.p[k]}</div>`).join('')).join('')}
+  <div></div>${L.map(c=>`<div class="rounded-2xl p-3 text-center text-white font-extrabold bg-gradient-to-br ${c.g}"><div class="text-3xl">${c.e}</div>${c.n}</div>`).join('')}
+  <div class="font-bold self-center">Visi</div>${L.map(c=>`<div class="bg-indigo-50 rounded-xl p-3 text-sm">${c.visi}</div>`).join('')}
+  ${Object.keys(L[0].p).map(k=>`<div class="font-bold self-center">${k}</div>`+L.map(c=>`<div class="bg-indigo-50 hover:bg-yellow-100 transition rounded-xl p-3 text-sm">${c.p[k]}</div>`).join('')).join('')}
  </div></div>`,'max-w-4xl'));
 }
 function videoModal(c){
@@ -196,17 +253,26 @@ function videoModal(c){
  <div class="shim aspect-video rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center"><div class="glow w-20 h-20 rounded-full bg-white/90 flex items-center justify-center text-4xl text-indigo-700">▶</div></div>
  <p class="text-slate-500 text-sm mt-3">Tempat video. Ganti dengan tag &lt;iframe&gt; atau &lt;video&gt; milikmu.</p>`));
 }
-function askModal(c){
- openM(box(`<div class="text-center"><div class="text-6xl">${c.e}</div><h3 class="text-2xl font-extrabold mt-2">Apakah kamu yakin memilih ${c.n}?</h3>
- <p class="text-slate-600 mt-1">Pilihan tidak bisa diubah setelah dikirim.</p>
- <div class="grid grid-cols-2 gap-3 mt-5"><button data-act="close" class="btn py-3 rounded-xl bg-slate-200 font-bold">Belum, kembali</button>
- <button data-act="yes" data-id="${c.id}" class="btn py-3 rounded-xl bg-indigo-600 text-white font-extrabold shadow-md">Ya, saya yakin</button></div></div>`));
+function reviewModal(){
+ const p=S.pick;if(p.o==null||p.m==null)return;const o=C[p.o],m=M[p.m];
+ const row=(t,c)=>`<div class="flex items-center gap-3 bg-indigo-50 rounded-2xl p-3"><span class="text-4xl">${c.e}</span><div><p class="text-xs font-bold text-indigo-500">${t}</p><p class="font-extrabold">${c.n}</p></div></div>`;
+ openM(box(`<div class="text-center"><h3 class="text-2xl font-extrabold">Cek dulu pilihanmu ya!</h3>
+ <div class="grid gap-3 mt-4 text-left">${row('KETUA & WAKIL OSIS',o)}${row('KETUA MPK',m)}</div>
+ <p class="text-slate-600 mt-3">Pilihan tidak bisa diubah setelah dikirim.</p>
+ <div class="grid grid-cols-2 gap-3 mt-4"><button data-act="close" class="btn py-3 rounded-xl bg-slate-200 font-bold">Belum, kembali</button>
+ <button data-act="yes" class="btn py-3 rounded-xl bg-indigo-600 text-white font-extrabold shadow-md">Ya, kirim suara</button></div></div>`));
 }
-function doVote(id){
- if(hasVoted())return;
- S.votes[id]++;S.voted[S.nisn]=id;save();closeM();render();confetti();
+async function doVote(){
+ const p=S.pick;if(hasVoted()||S.busy||p.o==null||p.m==null)return;
+ if(API){
+  S.busy=1;openM(box(`<div class="text-center py-6"><div class="text-5xl" style="animation:wob 1s infinite">📨</div><p class="font-bold mt-3">Mengirim suaramu…</p></div>`));
+  const r=await api('',{action:'vote',nisn:S.nisn,paslon:p.o+1,mpk:p.m+1});S.busy=0;
+  if(!r.ok&&r.error==='SUDAH_MEMILIH'){S.voted[S.nisn]=-1;closeM();render();toast('Suaramu sudah tercatat sebelumnya.');return}
+  if(!r.ok){closeM();toast(ERR[r.error]||'Gagal mengirim. Coba lagi.');return}
+ }else{S.votes.o[p.o]++;S.votes.m[p.m]++}
+ S.voted[S.nisn]={o:p.o,m:p.m};save();closeM();render();confetti();
  openM(box(`<div class="text-center"><div class="text-6xl" style="animation:wob 1s 2">🎉</div><h3 class="text-3xl font-extrabold mt-2">Terima Kasih Sudah Memilih!</h3>
- <p class="text-slate-600 mt-2">Suaramu untuk <b>${C[id].n}</b> sudah tercatat.</p>
+ <p class="text-slate-600 mt-2">Suaramu untuk <b>${C[p.o].n}</b> (OSIS) dan <b>${M[p.m].n}</b> (MPK) sudah tercatat.</p>
  <button data-act="close" class="btn mt-5 px-6 py-3 rounded-xl bg-yellow-300 text-indigo-900 font-extrabold">Selesai</button></div>`));
 }
 
@@ -228,19 +294,20 @@ function loop(){
 /* events */
 document.addEventListener('click',e=>{
  const el=e.target.closest('[data-act]');if(!el)return;
- const a=el.dataset.act,id=+el.dataset.id,c=C[id];
+ const a=el.dataset.act,id=+el.dataset.id,k=el.dataset.k||'o',c=E(k)[id];
  if(a==='stop')return;
  if(a==='close'){if(el===md&&e.target!==md)return;closeM()}
- else if(a==='tab'){tab=el.dataset.id;render()}
- else if(a==='logout'){S.view='login';S.nisn='';tab='vote';render()}
+ else if(a==='tab'){tab=el.dataset.id;render();if(tab==='result')loadRes()}
+ else if(a==='logout'){S.pick={o:null,m:null};RISE='rise';S.view='login';S.nisn='';S.me=null;S.key='';S.res=null;tab='vote';render()}
  else if(a==='visi')visiModal(c);
- else if(a==='compare')compareModal();
+ else if(a==='compare')compareModal(k);
  else if(a==='video')videoModal(c);
- else if(a==='ask')askModal(c);
- else if(a==='yes')doVote(id);
+ else if(a==='pick'){S.pick[k]=S.pick[k]===id?null:id;render();if(k==='o'&&S.pick.o!=null&&S.pick.m==null){const t=$('#mpk');if(t)t.scrollIntoView({behavior:'smooth'})}}
+ else if(a==='review')reviewModal();
+ else if(a==='yes')doVote();
  else if(a==='acc')el.parentElement.classList.toggle('open');
- else if(a==='sim'){for(let i=0;i<10;i++)S.votes[Math.floor(Math.random()*3)]++;save();render()}
- else if(a==='reset'){S.votes=[12,9,7];S.voted={};save();toast('Data demo direset');render()}
+ else if(a==='sim'){for(let i=0;i<10;i++){S.votes.o[Math.floor(Math.random()*3)]++;S.votes.m[Math.floor(Math.random()*3)]++}save();render()}
+ else if(a==='reset'){S.votes={o:[12,9,7],m:[10,11,7]};S.voted={};S.pick={o:null,m:null};save();toast('Data demo direset');render()}
 });
 addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
 render();
