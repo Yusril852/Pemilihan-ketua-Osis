@@ -76,16 +76,16 @@ const E=k=>k==='m'?M:C;
 const $=s=>document.querySelector(s), app=$('#app'), md=$('#modal');
 /* ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT (berakhiran /exec). Kosong = mode demo (data lokal browser). */
 const API='';
-let S={view:'login',nisn:'',votes:{o:[12,9,7],m:[10,11,7]},voted:{},me:null,res:null,key:'',busy:0,pick:{o:null,m:null}}, tab='vote', RISE='rise';
+let S={view:'login',nisn:'',pin:'',votes:{o:[12,9,7],m:[10,11,7]},voted:{},me:null,res:null,key:'',busy:0,pick:{o:null,m:null}}, tab='vote', RISE='rise';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-async function api(path,body){
- const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
- try{const r=await fetch(body?API:API+path,body?{method:'POST',body:JSON.stringify(body),signal:ctl.signal}:{signal:ctl.signal});return await r.json()}
- catch(e){return {ok:false,error:'JARINGAN'}}finally{clearTimeout(t)}
+async function api(body){
+  const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+  try{const r=await fetch(API,{method:'POST',body:JSON.stringify(body),signal:ctl.signal});return await r.json()}
+  catch(e){return {ok:false,error:'JARINGAN'}}finally{clearTimeout(t)}
 }
-const ERR={TIDAK_TERDAFTAR:'NISN/NIP tidak terdaftar. Tanya panitia ya.',DITUTUP:'Pemilihan belum dibuka atau sudah ditutup.',JARINGAN:'Koneksi bermasalah. Coba lagi.',SIBUK:'Server sedang ramai. Coba lagi sebentar.'};
-try{const d=JSON.parse(localStorage.getItem('pk2')||'null');if(d){S.votes=d.votes;S.voted=d.voted}}catch(e){}
-const save=()=>{try{localStorage.setItem('pk2',JSON.stringify({votes:S.votes,voted:S.voted}))}catch(e){}};
+const ERR={LOGIN_GAGAL:'NISN/NIP atau PIN salah. Cek kartu PIN dari panitia.',TERKUNCI:'Terlalu banyak percobaan salah. Coba lagi 10 menit lagi.',DITUTUP:'Pemilihan belum dibuka atau sudah ditutup.',JARINGAN:'Koneksi bermasalah. Coba lagi.',SIBUK:'Server sedang ramai. Coba lagi sebentar.',PASLON_INVALID:'Pilihan OSIS tidak valid. Muat ulang halaman.',MPK_INVALID:'Pilihan MPK tidak valid. Muat ulang halaman.',SERVER:'Gangguan server. Coba lagi sebentar.'};
+if(!API)try{const d=JSON.parse(localStorage.getItem('pk2')||'null');if(d){S.votes=d.votes;S.voted=d.voted}}catch(e){}
+const save=()=>{if(API)return;try{localStorage.setItem('pk2',JSON.stringify({votes:S.votes,voted:S.voted}))}catch(e){}};
 const V=(k='o')=>API?((S.res&&!S.res.locked)?(k==='m'?S.res.votesMpk:S.res.votes):[0,0,0]):S.votes[k];
 const tot=(k='o')=>V(k).reduce((a,b)=>a+b,0);
 const myVote=()=>S.voted[S.nisn];
@@ -122,9 +122,10 @@ function login(){
    <p class="text-slate-500 mb-4">Siswa pakai NISN (10 angka). Guru pakai NIP (18 angka).</p>
    <label for="nisn" class="font-bold">NISN (siswa) / NIP (guru)</label>
    <input id="nisn" inputmode="numeric" autocomplete="off" placeholder="10 angka NISN atau 18 angka NIP" class="w-full mt-1 px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none text-lg tracking-wider transition">
-   <p id="err" class="text-rose-600 font-bold h-6 mt-1"></p>
+   ${API?`<label for="pin" class="font-bold block mt-3">PIN (6 angka)</label><input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="6 angka dari kartu PIN" class="w-full mt-1 px-4 py-3 rounded-2xl border-2 border-indigo-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 outline-none text-lg tracking-wider transition">`:''}
+    <p id="err" class="text-rose-600 font-bold min-h-[1.5rem] mt-1"></p>
    <button class="btn w-full mt-2 py-3 rounded-2xl bg-yellow-300 hover:bg-yellow-400 text-indigo-900 font-extrabold text-lg shadow-lg">Mulai Memilih</button>
-   <p class="text-xs text-slate-400 mt-3">${API?'Gunakan NISN atau NIP yang terdaftar. Satu nomor hanya bisa memilih sekali.':'Demo: angka 10 digit (NISN) atau 18 digit (NIP) apa saja diterima. Satu nomor hanya bisa memilih sekali.'}</p>
+   <p class="text-xs text-slate-400 mt-3">${API?'Gunakan NISN/NIP dan PIN dari kartu yang dibagikan panitia. Satu nomor hanya bisa memilih sekali.':'Demo: angka 10 digit (NISN) atau 18 digit (NIP) apa saja diterima. Satu nomor hanya bisa memilih sekali.'}</p>
   </form></div></section>`;
 }
 
@@ -189,13 +190,13 @@ function resultView(){
 }
 async function loadRes(){
  if(!API)return;
- const r=await api('?action=results&key='+encodeURIComponent(S.key||''));
- if(!r.ok){toast('Gagal memuat hasil');return}
+ const r=await api({action:'results',key:S.key||''});
+ if(!r.ok){toast(ERR[r.error]||'Gagal memuat hasil');return}
  const same=JSON.stringify(r)===JSON.stringify(S.res);S.res=r;
  if(r.locked&&S.key){toast('Kode panitia salah');S.key=''}
  if(tab==='result'&&!same)render();
 }
-setInterval(()=>{if(tab==='result')loadRes()},20000);
+setInterval(()=>{if(tab==='result'&&!(S.res&&S.res.locked))loadRes()},20000);
 
 function footer(){
  return `<footer class="mt-8 bg-indigo-950 text-indigo-100 text-center px-4 py-6"><div class="flex justify-center items-center gap-3 mb-3">${lg('smp','h-14 w-11 object-contain bg-white rounded-xl p-1','Logo SMP Negeri 3 Kaliwungu')}${lg('osis','h-14 w-14 object-contain bg-white rounded-xl p-1','Logo OSIS')}${lg('kpo','h-14 w-[50px] object-contain rounded-xl','Logo Komisi Pemilihan OSIS')}</div><p class="fh font-bold">Komisi Pemilihan OSIS</p><p class="text-sm">SMP Negeri 3 Kaliwungu · Pilketos 2026</p></footer>`;
@@ -204,7 +205,7 @@ function render(){
  app.innerHTML=header()+(S.view==='login'&&tab!=='result'?login():tab==='result'?resultView():voteView())+footer();
  if(tab==='result')requestAnimationFrame(()=>setTimeout(animResult,50));
  const kf=$('#kf');if(kf)kf.onsubmit=e=>{e.preventDefault();S.key=$('#key').value;loadRes()};
- const f=$('#lf');if(f){f.onsubmit=doLogin;$('#nisn').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,18);$('#err').textContent='';e.target.classList.remove('border-rose-500')}}
+ const f=$('#lf');if(f){f.onsubmit=doLogin;const pn=$('#pin');if(pn)pn.oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,6);$('#err').textContent=''};$('#nisn').oninput=e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,18);$('#err').textContent='';e.target.classList.remove('border-rose-500')}}
  document.querySelectorAll('.tw').forEach(w=>{const el=w.firstElementChild;
   w.onmousemove=e=>{const r=w.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform=`rotateY(${x*8}deg) rotateX(${-y*8}deg) translateY(-4px)`};
   w.onmouseleave=()=>el.style.transform='';
@@ -216,16 +217,18 @@ function animResult(){
 }
 
 async function doLogin(e){
- e.preventDefault();const v=$('#nisn').value.trim();
+ e.preventDefault();const v=$('#nisn').value.trim();let pin='';
  if(!/^(\d{10}|\d{18})$/.test(v)){$('#err').textContent='Siswa: NISN 10 angka. Guru: NIP 18 angka.';$('#nisn').classList.add('border-rose-500');$('#nisn').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250,iterations:2});return}
  if(API){
-  const btn=$('#lf button');btn.disabled=true;btn.textContent='Mengecek…';
-  const r=await api('?action=login&nisn='+v);
+  pin=$('#pin').value.trim();if(!/^\d{6}$/.test(pin)){$('#err').textContent='PIN 6 angka dari kartu panitia.';$('#pin').focus();return}
+   const btn=$('#lf button');btn.disabled=true;btn.textContent='Mengecek…';
+  const r=await api({action:'login',nisn:v,pin});
   btn.disabled=false;btn.textContent='Mulai Memilih';
   if(!r.ok){$('#err').textContent=ERR[r.error]||'Terjadi kesalahan. Coba lagi.';return}
-  S.me=r;if(r.voted)S.voted[v]=-1;else delete S.voted[v];
+  if(r.paslon!==C.length||r.mpk!==M.length){$('#err').textContent='Jumlah kandidat di halaman dan server tidak sama. Hubungi panitia.';return}
+   S.me=r;if(r.voted)S.voted[v]=-1;else delete S.voted[v];
  }
- S.nisn=v;S.view='vote';tab='vote';S.pick={o:null,m:null};RISE='rise';render();setTimeout(()=>RISE='',1000);
+ S.nisn=v;S.pin=pin;S.view='vote';tab='vote';S.pick={o:null,m:null};RISE='rise';render();setTimeout(()=>RISE='',1000);
  if(hasVoted())toast('Nomor ini sudah memilih. Satu suara per pemilih.');else toast(S.me?'Selamat datang, '+S.me.nama+'! 🎉':'Selamat datang! Pilih paslon favoritmu 🎉');
 }
 
@@ -266,7 +269,7 @@ async function doVote(){
  const p=S.pick;if(hasVoted()||S.busy||p.o==null||p.m==null)return;
  if(API){
   S.busy=1;openM(box(`<div class="text-center py-6"><div class="text-5xl" style="animation:wob 1s infinite">📨</div><p class="font-bold mt-3">Mengirim suaramu…</p></div>`));
-  const r=await api('',{action:'vote',nisn:S.nisn,paslon:p.o+1,mpk:p.m+1});S.busy=0;
+  const r=await api({action:'vote',nisn:S.nisn,pin:S.pin,paslon:p.o+1,mpk:p.m+1});S.busy=0;
   if(!r.ok&&r.error==='SUDAH_MEMILIH'){S.voted[S.nisn]=-1;closeM();render();toast('Suaramu sudah tercatat sebelumnya.');return}
   if(!r.ok){closeM();toast(ERR[r.error]||'Gagal mengirim. Coba lagi.');return}
  }else{S.votes.o[p.o]++;S.votes.m[p.m]++}
@@ -298,7 +301,7 @@ document.addEventListener('click',e=>{
  if(a==='stop')return;
  if(a==='close'){if(el===md&&e.target!==md)return;closeM()}
  else if(a==='tab'){tab=el.dataset.id;render();if(tab==='result')loadRes()}
- else if(a==='logout'){S.pick={o:null,m:null};RISE='rise';S.view='login';S.nisn='';S.me=null;S.key='';S.res=null;tab='vote';render()}
+ else if(a==='logout'){S.pick={o:null,m:null};RISE='rise';S.view='login';S.nisn='';S.pin='';if(API)S.voted={};S.me=null;S.key='';S.res=null;tab='vote';render()}
  else if(a==='visi')visiModal(c);
  else if(a==='compare')compareModal(k);
  else if(a==='video')videoModal(c);
