@@ -75,7 +75,7 @@ const M=[
 const E=k=>k==='m'?M:C;
 const $=s=>document.querySelector(s), app=$('#app'), md=$('#modal');
 /* ISI DENGAN URL WEB APP GOOGLE APPS SCRIPT (berakhiran /exec). Kosong = mode demo (data lokal browser). */
-const API='';
+const API='https://script.google.com/macros/s/AKfycbzPmFHow0tDF1OT4tZOutV1gAhqsDfcGcNSSLsLJQye9Jl03BD3ugjoVgb92pY0QLOG/exec';
 let S={view:'login',nisn:'',pin:'',votes:{o:[12,9,7],m:[10,11,7]},voted:{},me:null,res:null,key:'',busy:0,pick:{o:null,m:null}}, tab='vote', RISE='rise';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(body){
