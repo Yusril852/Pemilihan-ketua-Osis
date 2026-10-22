@@ -45,32 +45,32 @@ const L={"kpo": "data:image/webp;base64,UklGRiI6AABXRUJQVlA4IBY6AAAQrwCdASrYAPAA
 const lg=(k,c,alt)=>`<img src="${L[k]}" alt="${alt}" class="${c}" draggable="false">`;
 document.head.insertAdjacentHTML('beforeend',`<link rel="icon" href="${L.osis}">`);
 const C=[
-{id:0,n:'Aira & Bimo',s:'Sekolah Ceria',e:'🦊',g:'from-indigo-500 to-blue-500',col:'#6366f1',
- visi:'Menjadikan sekolah tempat belajar yang menyenangkan, aman, dan penuh prestasi.',
- misi:['Mengadakan kelas belajar kelompok setiap Jumat siang.','Membuat kotak aspirasi digital untuk semua siswa.','Menggelar lomba antar kelas tiap bulan.'],
- p:{Akademik:'Klub belajar bareng kakak kelas',Olahraga:'Turnamen futsal & voli antar kelas',Lingkungan:'Gerakan 1 siswa 1 tanaman',Teknologi:'Mading digital sekolah'}},
-{id:1,n:'Citra & Dika',s:'Gerak Kreatif',e:'🦄',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
- visi:'Mewadahi bakat setiap siswa lewat seni, musik, dan karya kreatif.',
- misi:['Membuka panggung seni setiap akhir bulan.','Membentuk klub film pendek dan podcast sekolah.','Mengadakan bazar karya siswa.'],
- p:{Akademik:'Pameran proyek sains siswa',Olahraga:'Senam kreatif tiap Sabtu pagi',Lingkungan:'Seni daur ulang dari sampah plastik',Teknologi:'Podcast & radio sekolah'}},
-{id:2,n:'Eka & Fajar',s:'Peduli Bersama',e:'🐯',g:'from-amber-400 to-orange-500',col:'#f59e0b',
- visi:'Membangun sekolah yang saling peduli, bersih, dan bebas perundungan.',
- misi:['Membentuk tim sahabat anti-bullying.','Mengadakan aksi bersih sekolah dua minggu sekali.','Menggalang donasi buku dan alat tulis.'],
- p:{Akademik:'Bank buku & alat tulis bersama',Olahraga:'Jalan sehat dan lomba kebersihan',Lingkungan:'Bank sampah dan kantin bebas plastik',Teknologi:'Formulir lapor perundungan anonim'}}
+{id:0,n:'Aisyah Azzahra & Bima Dwi Prasetyo',kelas:'Kelas 8F & 7D',s:'Kreatif, Asyik, & Berbakat',e:'🦊',foto:'',g:'from-indigo-500 to-blue-500',col:'#6366f1',
+ visi:'Menjadikan OSIS sebagai wadah yang asyik untuk mengembangkan bakat, kreativitas, dan kepedulian antar sesama siswa.',
+ misi:['Mengadakan kegiatan seni dan olahraga yang seru dan melibatkan semua kelas.','Mendukung penuh kegiatan ekstrakurikuler agar makin berprestasi.','Menggalakkan aksi sosial dan saling membantu sesama warga sekolah.'],
+ p:{'Program Unggulan':'"Classmeet & Art Festival": Lomba olahraga antar kelas yang dipadukan dengan pameran karya seni, fotografi, serta pentas musik siswa pada akhir semester.'}},
+{id:1,n:'Rany Desiana Putri & Muhammad Rafiif Zanuar',kelas:'Kelas 8E & 8B',s:'Aktif, Disiplin, & Peduli Lingkungan',e:'🦄',foto:'',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
+ visi:'Mewujudkan OSIS yang aktif, berakhlak mulia, disiplin, dan peduli terhadap kebersihan lingkungan sekolah.',
+ misi:['Meningkatkan kegiatan keagamaan demi membentuk karakter siswa yang jujur dan sopan.','Menerapkan kebiasaan disiplin waktu melalui contoh dari pengurus OSIS.','Mengajak siswa untuk lebih mencintai dan menjaga kebersihan sekolah.'],
+ p:{'Program Unggulan':'"Green & Clean Challenge": Kompetisi kebersihan, keindahan, dan pemilahan sampah antar kelas dengan hadiah menarik setiap bulannya untuk memotivasi siswa.'}},
+{id:2,n:'Anisa Maulana Indrawati & Alleta Marsya Salsabila',kelas:'Kelas 8A & 7B',s:'Digital, Inovatif, & Kekinian',e:'🐯',foto:'',g:'from-amber-400 to-orange-500',col:'#f59e0b',
+ visi:'Membangun OSIS yang modern, melek teknologi (digital), dan menjadi jembatan yang menyenangkan untuk menyalurkan bakat siswa.',
+ misi:['Memanfaatkan media sosial sekolah sebagai sarana informasi yang kreatif dan edukatif.','Membuat kompetisi berbasis teknologi dan e-sports yang mendidik.','Mendengar dan mewujudkan ide-ide seru dari teman-teman siswa secara cepat.'],
+ p:{'Program Unggulan':'"SMP Podcast & E-Sports Zone": Membuat konten podcast bulanan di Spotify/YouTube sekolah untuk membahas tips belajar atau cerita seru siswa, serta mengadakan turnamen game edukasi/e-sports saat classmeet.'}}
 ];
 const M=[
-{id:0,n:'Galih Pratama',kelas:'Kelas 8A',s:'Suara Kelas, Suara Kita',e:'🦁',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
- visi:'Menjadikan MPK jembatan aspirasi yang didengar oleh seluruh kelas.',
- misi:['Menampung aspirasi tiap kelas setiap bulan.','Menyampaikan hasil rapat MPK secara terbuka.','Membantu pengurus kelas menyelesaikan masalah.'],
- p:{Aspirasi:'Kotak aspirasi di setiap kelas',Pengawasan:'Laporan kerja OSIS tiap semester',Kegiatan:'Rapat perwakilan kelas rutin',Komunikasi:'Papan info MPK di lorong'}},
-{id:1,n:'Hana Maharani',kelas:'Kelas 8B',s:'Aspirasi Tanpa Batas',e:'🐬',g:'from-emerald-500 to-teal-500',col:'#10b981',
- visi:'Membangun MPK yang aktif, terbuka, dan dekat dengan semua siswa.',
- misi:['Mengadakan forum curhat dan usul siswa.','Mengawasi program OSIS agar sesuai janji.','Melatih perwakilan kelas berbicara dan memimpin.'],
- p:{Aspirasi:'Forum usul siswa tiap bulan',Pengawasan:'Rapor program kerja OSIS',Kegiatan:'Pelatihan public speaking perwakilan',Komunikasi:'Akun info MPK sekolah'}},
-{id:2,n:'Ivan Nugroho',kelas:'Kelas 8C',s:'Tegas, Adil, Peduli',e:'🦅',g:'from-rose-500 to-pink-500',col:'#f43f5e',
- visi:'MPK yang tegas dan adil dalam mengawasi serta membela kepentingan siswa.',
- misi:['Menegakkan keadilan dalam setiap keputusan.','Mengawal aspirasi sampai ada tindak lanjut.','Menjaga kekompakan antar kelas.'],
- p:{Aspirasi:'Tindak lanjut aspirasi maksimal 2 minggu',Pengawasan:'Evaluasi kegiatan OSIS terbuka',Kegiatan:'Lomba kekompakan antar kelas',Komunikasi:'Rekap hasil rapat di mading'}}
+{id:0,n:'Rhima Citra Safitri',kelas:'Kelas 7D',s:'Terbuka & Ramah Aspirasi',e:'🦁',foto:'',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
+ visi:'Menjadikan MPK sebagai "rumah curhat" yang nyaman, tepercaya, dan selalu siap mendengarkan suara seluruh siswa.',
+ misi:['Membuka jalur komunikasi yang mudah agar siswa tidak ragu menyampaikan saran.','Menyampaikan aspirasi siswa kepada pihak sekolah dengan cara yang baik dan sopan.','Menjadi penengah yang adil jika ada masalah antar kelas atau siswa.'],
+ p:{'Program Unggulan':'"Kotak Suara Digital (KSD)": Menyediakan link formulir daring (online form) anonim agar siswa bisa bebas mengirimkan saran, kritik, atau ide untuk sekolah kapan saja tanpa takut identitasnya ketahuan.'}},
+{id:1,n:'Alifa Gadis Sakina Yasmi',kelas:'Kelas 8E',s:'Tegas & Mitra Pengawas OSIS',e:'🐬',foto:'',g:'from-emerald-500 to-teal-500',col:'#10b981',
+ visi:'Mewujudkan MPK yang tegas, objektif, dan profesional dalam mengawasi serta membantu menyukseskan program kerja OSIS.',
+ misi:['Mengawasi setiap jalannya acara OSIS agar berjalan sesuai rencana dan bermanfaat.','Mengadakan rapat evaluasi rutin bersama OSIS demi perbaikan kualitas kegiatan sekolah.','Memastikan perwakilan kelas aktif mengikuti rapat koordinasi.'],
+ p:{'Program Unggulan':'"Rapor Kinerja OSIS": MPK akan mengumpulkan penilaian dari perwakilan kelas mengenai jalannya acara OSIS, lalu memberikan masukan tertulis agar acara berikutnya jauh lebih seru.'}},
+{id:2,n:'Annisa Salsabila Nugroho',kelas:'Kelas 8B',s:'Komunikatif & Penggerak Disiplin',e:'🦅',foto:'',g:'from-rose-500 to-pink-500',col:'#f43f5e',
+ visi:'Menjadikan MPK sebagai organisasi yang komunikatif, kompak, dan mampu menjadi teladan kedisiplinan bagi seluruh siswa.',
+ misi:['Meningkatkan kerja sama yang erat antara perwakilan kelas, OSIS, dan guru.','Mensosialisasikan aturan sekolah secara kreatif agar mudah dipatuhi siswa.','Mengaktifkan kembali peran ketua kelas dalam menjaga ketertiban.'],
+ p:{'Program Unggulan':'"Forum Ketua Kelas (FKK)": Rapat santai dua minggu sekali bersama seluruh ketua kelas untuk membahas kondisi kelas masing-masing, kenyamanan belajar, serta keluhan fasilitas sekolah yang perlu diperbaiki.'}}
 ];
 const E=k=>k==='m'?M:C;
 const $=s=>document.querySelector(s), app=$('#app'), md=$('#modal');
@@ -132,10 +132,11 @@ function login(){
 function card(c,i,k){
  const dis=hasVoted(),v=mv(),mine=!!(v&&v[k]===c.id),sel=S.pick[k]===c.id,lab=(k==='m'?'Pilih Calon ':'Pilih Paslon ')+(i+1);
  return `<div class="tw" style="perspective:900px"><article class="tilt ${RISE} bg-white rounded-3xl p-4 shadow-lg ${mine||sel?'ring-4 ring-yellow-300':''}" style="animation-delay:${i*.1}s">
-  <div class="shim h-44 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center relative">
+  <div class="${c.foto?'':'shim '}h-44 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center relative overflow-hidden">
    <div class="glow w-24 h-24 rounded-full bg-white/90 flex items-center justify-center text-6xl">${c.e}</div>
+   ${c.foto?`<img src="${esc(c.foto)}" alt="Foto ${esc(c.n)}" loading="lazy" draggable="false" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 20%">`:''}
    <span class="absolute top-3 left-3 bg-white/90 text-indigo-900 font-extrabold rounded-full w-9 h-9 flex items-center justify-center">${i+1}</span>
-   <button data-act="video" data-k="${k}" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">▶ Video</button>
+   ${c.foto?`<button data-act="foto" data-k="${k}" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">🔍 Foto</button>`:''}
   </div>
   <h3 class="text-2xl font-extrabold mt-3">${c.n}</h3>${c.kelas?`<p class="text-sm font-bold text-slate-500">${c.kelas}</p>`:''}
   <p class="text-indigo-600 font-bold">"${c.s}"</p>
@@ -251,10 +252,11 @@ function compareModal(k){
   ${Object.keys(L[0].p).map(k=>`<div class="font-bold self-center">${k}</div>`+L.map(c=>`<div class="bg-indigo-50 hover:bg-yellow-100 transition rounded-xl p-3 text-sm">${c.p[k]}</div>`).join('')).join('')}
  </div></div>`,'max-w-4xl'));
 }
-function videoModal(c){
- openM(box(`<h3 class="text-xl font-extrabold mb-3">Video perkenalan ${c.n}</h3>
- <div class="shim aspect-video rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center"><div class="glow w-20 h-20 rounded-full bg-white/90 flex items-center justify-center text-4xl text-indigo-700">▶</div></div>
- <p class="text-slate-500 text-sm mt-3">Tempat video. Ganti dengan tag &lt;iframe&gt; atau &lt;video&gt; milikmu.</p>`));
+function fotoModal(c){
+ openM(box(`<h3 class="text-xl font-extrabold mb-3">Foto ${esc(c.n)}</h3>
+ <div class="rounded-2xl overflow-hidden bg-gradient-to-br ${c.g} flex items-center justify-center min-h-[12rem] text-white font-bold p-1">
+  <img src="${esc(c.foto)}" alt="Foto ${esc(c.n)}" class="w-full max-h-[70vh] object-contain" onerror="this.replaceWith(document.createTextNode('Foto belum tersedia'))">
+ </div>`));
 }
 function reviewModal(){
  const p=S.pick;if(p.o==null||p.m==null)return;const o=C[p.o],m=M[p.m];
@@ -304,7 +306,7 @@ document.addEventListener('click',e=>{
  else if(a==='logout'){S.pick={o:null,m:null};RISE='rise';S.view='login';S.nisn='';S.pin='';if(API)S.voted={};S.me=null;S.key='';S.res=null;tab='vote';render()}
  else if(a==='visi')visiModal(c);
  else if(a==='compare')compareModal(k);
- else if(a==='video')videoModal(c);
+ else if(a==='foto'&&c.foto)fotoModal(c);
  else if(a==='pick'){S.pick[k]=S.pick[k]===id?null:id;render();if(k==='o'&&S.pick.o!=null&&S.pick.m==null){const t=$('#mpk');if(t)t.scrollIntoView({behavior:'smooth'})}}
  else if(a==='review')reviewModal();
  else if(a==='yes')doVote();
