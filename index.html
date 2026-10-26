@@ -45,15 +45,15 @@ const L={"kpo": "data:image/webp;base64,UklGRiI6AABXRUJQVlA4IBY6AAAQrwCdASrYAPAA
 const lg=(k,c,alt)=>`<img src="${L[k]}" alt="${alt}" class="${c}" draggable="false">`;
 document.head.insertAdjacentHTML('beforeend',`<link rel="icon" href="${L.osis}">`);
 const C=[
-{id:0,n:'Aisyah Azzahra 8F dan Bima Dwi Prasetyo 7D',tim:['Aisyah Azzahra 8F','Bima Dwi Prasetyo 7D'],s:'Kreatif, Asyik, & Berbakat',e:'🦊',foto:'',g:'from-indigo-500 to-blue-500',col:'#6366f1',
+{id:0,n:'Aisyah Azzahra 8F dan Bima Dwi Prasetyo 7D',tim:['Aisyah Azzahra 8F','Bima Dwi Prasetyo 7D'],s:'Kreatif, Asyik, & Berbakat',e:'🦊',foto:'foto/osis1.jpg',fotoPos:'center 10%',g:'from-indigo-500 to-blue-500',col:'#6366f1',
  visi:'Menjadikan OSIS sebagai wadah yang asyik untuk mengembangkan bakat, kreativitas, dan kepedulian antar sesama siswa.',
  misi:['Mengadakan kegiatan seni dan olahraga yang seru dan melibatkan semua kelas.','Mendukung penuh kegiatan ekstrakurikuler agar makin berprestasi.','Menggalakkan aksi sosial dan saling membantu sesama warga sekolah.'],
  p:{'Program Unggulan':'"Classmeet & Art Festival": Lomba olahraga antar kelas yang dipadukan dengan pameran karya seni, fotografi, serta pentas musik siswa pada akhir semester.'}},
-{id:1,n:'Rany Desiana Putri 8E dan Muhammad Rafiif Zanuar 8B',tim:['Rany Desiana Putri 8E','Muhammad Rafiif Zanuar 8B'],s:'Aktif, Disiplin, & Peduli Lingkungan',e:'🦄',foto:'',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
- visi:'Mewujudkan OSIS yang aktif, berakhlak mulia, disiplin, dan peduli terhadap kebersihan lingkungan sekolah.',
- misi:['Meningkatkan kegiatan keagamaan demi membentuk karakter siswa yang jujur dan sopan.','Menerapkan kebiasaan disiplin waktu melalui contoh dari pengurus OSIS.','Mengajak siswa untuk lebih mencintai dan menjaga kebersihan sekolah.'],
- p:{'Program Unggulan':'"Green & Clean Challenge": Kompetisi kebersihan, keindahan, dan pemilahan sampah antar kelas dengan hadiah menarik setiap bulannya untuk memotivasi siswa.'}},
-{id:2,n:'Anisa Maulana Indrawati 8A dan Alleta Marsya Salsabila 7B',tim:['Anisa Maulana Indrawati 8A','Alleta Marsya Salsabila 7B'],s:'Digital, Inovatif, & Kekinian',e:'🐯',foto:'',g:'from-amber-400 to-orange-500',col:'#f59e0b',
+{id:1,n:'Rany Desiana Putri 8E dan Muhammad Rafiif Zanuar 8B',tim:['Rany Desiana Putri 8E','Muhammad Rafiif Zanuar 8B'],s:'Aktif, Kreatif, dan Positif',e:'🦄',foto:'foto/osis2.jpg',fotoPos:'center 10%',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
+ visi:'Menjadikan OSIS yang aktif, kreatif, dan menjadi penggerak yang berperilaku positif.',
+ misi:['Mengadakan kegiatan positif yang mendukung bakat dan minat siswa.','Meningkatkan kerja sama dan kebersamaan antar siswa.','Menjadi jembatan komunikasi yang baik antara siswa dan pihak sekolah.'],
+ p:{'Program Unggulan':'"Pekan Kreativitas Siswa": Kompetisi seni, olahraga, dan pameran karya inovatif antar kelas.'}},
+{id:2,n:'Anisa Maulana Indrawati 8A dan Alleta Marsya Salsabila 7B',tim:['Anisa Maulana Indrawati 8A','Alleta Marsya Salsabila 7B'],s:'Digital, Inovatif, & Kekinian',e:'🐯',foto:'foto/osis3.jpg',fotoPos:'center 10%',g:'from-amber-400 to-orange-500',col:'#f59e0b',
  visi:'Membangun OSIS yang modern, melek teknologi (digital), dan menjadi jembatan yang menyenangkan untuk menyalurkan bakat siswa.',
  misi:['Memanfaatkan media sosial sekolah sebagai sarana informasi yang kreatif dan edukatif.','Membuat kompetisi berbasis teknologi dan e-sports yang mendidik.','Mendengar dan mewujudkan ide-ide seru dari teman-teman siswa secara cepat.'],
  p:{'Program Unggulan':'"SMP Podcast & E-Sports Zone": Membuat konten podcast bulanan di Spotify/YouTube sekolah untuk membahas tips belajar atau cerita seru siswa, serta mengadakan turnamen game edukasi/e-sports saat classmeet.'}}
@@ -135,7 +135,7 @@ function card(c,i,k){
  return `<div class="tw" style="perspective:900px"><article class="tilt ${RISE} bg-white rounded-3xl p-4 shadow-lg ${mine||sel?'ring-4 ring-yellow-300':''}" style="animation-delay:${i*.1}s">
   <div class="${c.foto?'':'shim '}h-44 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center relative overflow-hidden">
    <div class="glow w-24 h-24 rounded-full bg-white/90 flex items-center justify-center text-6xl">${c.e}</div>
-   ${c.foto?`<img src="${esc(c.foto)}" alt="Foto ${esc(c.n)}" loading="lazy" draggable="false" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover" style="object-position:center 20%">`:''}
+   ${c.foto?`<img src="${esc(c.foto)}" alt="Foto ${esc(c.n)}" loading="lazy" draggable="false" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover" style="object-position:${c.fotoPos||'center 20%'}">`:''}
    <span class="absolute top-3 left-3 bg-white/90 text-indigo-900 font-extrabold rounded-full w-9 h-9 flex items-center justify-center">${i+1}</span>
    ${c.foto?`<button data-act="foto" data-k="${k}" data-id="${c.id}" class="btn absolute bottom-3 right-3 bg-white/90 text-indigo-900 text-sm font-bold rounded-full px-3 py-1">🔍 Foto</button>`:''}
   </div>
