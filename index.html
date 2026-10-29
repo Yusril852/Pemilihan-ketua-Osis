@@ -45,29 +45,29 @@ const L={"kpo": "data:image/webp;base64,UklGRiI6AABXRUJQVlA4IBY6AAAQrwCdASrYAPAA
 const lg=(k,c,alt)=>`<img src="${L[k]}" alt="${alt}" class="${c}" draggable="false">`;
 document.head.insertAdjacentHTML('beforeend',`<link rel="icon" href="${L.osis}">`);
 const C=[
-{id:0,n:'Aisyah Azzahra 8F dan Bima Dwi Prasetyo 7D',tim:['Aisyah Azzahra 8F','Bima Dwi Prasetyo 7D'],s:'Kreatif, Asyik, & Berbakat',e:'🦊',foto:'foto/osis1.png',fotoPos:'center 10%',g:'from-indigo-500 to-blue-500',col:'#6366f1',
+{id:0,n:'Aisyah Azzahra 8F dan Bima Dwi Prasetyo 7D',tim:['Aisyah Azzahra 8F','Bima Dwi Prasetyo 7D'],s:'Satu pilihan sejuta harapan',e:'🦊',foto:'foto/osis1.png',fotoPos:'center 10%',g:'from-indigo-500 to-blue-500',col:'#6366f1',
  visi:'Mengembangkan OSIS sebagai organisasi yang sigap, musyawarah, adil, dan teliti. Menjadikan OSIS sebagai wadah yang seru, ramah, dan solutif, agar sekolah bukan cuma tempat belajar tetapi juga tempat yang nyaman untuk berkarya tanpa rasa takut.',
  misi:['Menciptakan ruang komunikasi yang aman dan ramah bagi seluruh siswa tanpa membedakan tingkatan kelas.','Meningkatkan literasi digital dan keterampilan siswa secara berkelanjutan.'],
  p:{'Program Unggulan':'1. Senin Disiplin: setiap hari Senin anggota OSIS bergiliran memeriksa atribut, kuku, dan make up siswa/i sebelum masuk lingkungan sekolah.<br>2. Classmeeting setiap kenaikan kelas dan lomba setiap hari besar.<br>3. Pembersihan menyeluruh di sekolah satu bulan sekali.'}},
-{id:1,n:'Rany Desiana Putri 8E dan Muhammad Rafiif Zanuar 8B',tim:['Rany Desiana Putri 8E','Muhammad Rafiif Zanuar 8B'],s:'Aktif, Kreatif, dan Positif',e:'🦄',foto:'foto/osis2.png',fotoPos:'center 10%',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
+{id:1,n:'Rany Desiana Putri 8E dan Muhammad Rafiif Zanuar 8B',tim:['Rany Desiana Putri 8E','Muhammad Rafiif Zanuar 8B'],s:'Dua pilihan banyak perubahan',e:'🦄',foto:'foto/osis2.png',fotoPos:'center 10%',g:'from-purple-500 to-fuchsia-500',col:'#a855f7',
  visi:'Menjadikan OSIS yang aktif, kreatif, dan menjadi penggerak yang berperilaku positif.',
  misi:['Mengadakan kegiatan positif yang mendukung bakat dan minat siswa.','Meningkatkan kerja sama dan kebersamaan antar siswa.','Menjadi jembatan komunikasi yang baik antara siswa dan pihak sekolah.'],
  p:{'Program Unggulan':'"Pekan Kreativitas Siswa": Kompetisi seni, olahraga, dan pameran karya inovatif antar kelas.'}},
-{id:2,n:'Anisa Maulana Indrawati 8A dan Alleta Marsya Salsabila 7B',tim:['Anisa Maulana Indrawati 8A','Alleta Marsya Salsabila 7B'],s:'Digital, Inovatif, & Kekinian',e:'🐯',foto:'foto/osis3.png',fotoPos:'center 10%',g:'from-amber-400 to-orange-500',col:'#f59e0b',
+{id:2,n:'Anisa Maulana Indrawati 8A dan Alleta Marsya Salsabila 7B',tim:['Anisa Maulana Indrawati 8A','Alleta Marsya Salsabila 7B'],s:'Tiga bersama wujudkan asa',e:'🐯',foto:'foto/osis3.png',fotoPos:'center 10%',g:'from-amber-400 to-orange-500',col:'#f59e0b',
  visi:'Menjadikan OSIS sebagai organisasi yang aktif dan kreatif dalam menyelenggarakan program kerja, serta sebagai organisasi yang membentuk siswa/siswi dengan kepribadian lokal dan kuat.',
  misi:['Menyelenggarakan kegiatan sekolah yang inovatif, seperti cerdas cermat dan kompetisi bidang olahraga.','Menjadikan siswa yang lebih disiplin dan berani.'],
  p:{'Program Unggulan':'1. Mengadakan classmeet inovatif, seperti cerdas cermat dan kompetisi bidang olahraga.<br>2. Mengadakan pelatihan bagi OSIS agar lebih disiplin.<br>3. Memastikan program OSIS dapat berkelanjutan.<br>4. Memberikan dampak positif jangka panjang.'}}
 ];
 const M=[
-{id:0,n:'Rhima Citra Safitri',kelas:'Kelas 7D',s:'Terbuka & Ramah Aspirasi',e:'🦁',foto:'foto/mpk1.png',fotoPos:'center 8%',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
+{id:0,n:'Rhima Citra Safitri',kelas:'Kelas 7D',s:'MPK satu suara bersatu',e:'🦁',foto:'foto/mpk1.png',fotoPos:'center 8%',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
  visi:'Mewujudkan MPK SMP Negeri 3 Kaliwungu yang aktif, bergotong royong, dan menjaga kekompakan antar siswa.',
  misi:['Aktif dalam perlombaan atau ekstrakurikuler.','Mengadakan program peduli lingkungan.','Mengaktifkan kembali program Jumat Bersih.','Mempererat kekompakan antar siswa dalam bergotong royong.'],
  p:{'Program Unggulan':'1. "Jumat Bersih": setiap hari Jumat, semua siswa bergotong royong membersihkan sampah di kelas, halaman luar, dan lapangan.<br>2. "Jumat LISA (Lihat Sampah Ambil)": setiap hari Jumat, sebelum pulang sekolah, semua siswa wajib mengambil sampah di kelas maupun halaman luar untuk dibuang ke tempat sampah, agar SMP Negeri 3 Kaliwungu menjadi hijau, bersih, dan nyaman untuk ditempati.'}},
-{id:1,n:'Alifa Gadis Sakina Yasmi',kelas:'Kelas 8E',s:'Tegas & Mitra Pengawas OSIS',e:'🐬',foto:'foto/mpk2.png',fotoPos:'center 0%',g:'from-emerald-500 to-teal-500',col:'#10b981',
+{id:1,n:'Alifa Gadis Sakina Yasmi',kelas:'Kelas 8E',s:'MPK dua aspirasi semua',e:'🐬',foto:'foto/mpk2.png',fotoPos:'center 0%',g:'from-emerald-500 to-teal-500',col:'#10b981',
  visi:'Mewujudkan MPK yang aspiratif, objektif, transparan, dan bertanggung jawab sebagai wadah perwakilan siswa serta pengawas organisasi yang berintegritas.',
  misi:['Menampung dan menyalurkan aspirasi siswa secara objektif kepada pihak terkait.','Mengawasi dan mengevaluasi program kerja OSIS secara berkala dan bertanggung jawab.','Membangun komunikasi yang terbuka antara MPK, OSIS, siswa, dan pihak sekolah.'],
  p:{'Program Unggulan':'"Aspirasi Siswa": Menyediakan wadah bagi siswa untuk menyampaikan saran, pendapat, dan permasalahan di lingkungan sekolah. Aspirasi yang terkumpul akan dibahas dan disampaikan kepada pihak terkait untuk dipertimbangkan serta ditindaklanjuti sesuai kewenangan dan ketentuan sekolah.'}},
-{id:2,n:'Annisa Salsabila Nugroho',kelas:'Kelas 8B',s:'Komunikatif & Penggerak Disiplin',e:'🦅',foto:'foto/mpk3.png',fotoPos:'center 4%',g:'from-rose-500 to-pink-500',col:'#f43f5e',
+{id:2,n:'Annisa Salsabila Nugroho',kelas:'Kelas 8B',s:'MPK tiga aspirasi terjaga',e:'🦅',foto:'foto/mpk3.png',fotoPos:'center 4%',g:'from-rose-500 to-pink-500',col:'#f43f5e',
  visi:'Menjadikan MPK sebagai wadah yang aktif, kreatif, dan peduli kepada sesama.',
  misi:['Menjalin komunikasi aktif kepada siswa, guru, dan OSIS.','Menerima dan menyalurkan aspirasi, ide, dan saran.'],
  p:{'Program Unggulan':'1. ART Week: seminggu sekali diadakan lomba menggambar.<br>2. Kartu ucapan apresiasi (Hand by MPK): MPK membuat 2-3 kartu ucapan dengan tulisan tangan dan gambar sendiri.<br>3. Kotak aspirasi digital: dibuatkan link Google Form/kotak aspirasi saran agar siswa dapat curhat secara anonim.'}}
