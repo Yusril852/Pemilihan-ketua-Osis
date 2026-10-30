@@ -59,7 +59,7 @@ const C=[
  p:{'Program Unggulan':'1. Mengadakan classmeet inovatif, seperti cerdas cermat dan kompetisi bidang olahraga.<br>2. Mengadakan pelatihan bagi OSIS agar lebih disiplin.<br>3. Memastikan program OSIS dapat berkelanjutan.<br>4. Memberikan dampak positif jangka panjang.'}}
 ];
 const M=[
-{id:0,n:'Rhima Citra Safitri',kelas:'Kelas 7D',s:'MPK satu suara bersatu',e:'🦁',foto:'foto/mpk1.png',fotoPos:'center 8%',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
+{id:0,n:'Rhima Citra Safitri',kelas:'Kelas 7D',s:'MPK satu suara bersatu',e:'🦁',foto:'foto/mpk1.png',fotoPos:'center 0%',g:'from-sky-500 to-cyan-500',col:'#0ea5e9',
  visi:'Mewujudkan MPK SMP Negeri 3 Kaliwungu yang aktif, bergotong royong, dan menjaga kekompakan antar siswa.',
  misi:['Aktif dalam perlombaan atau ekstrakurikuler.','Mengadakan program peduli lingkungan.','Mengaktifkan kembali program Jumat Bersih.','Mempererat kekompakan antar siswa dalam bergotong royong.'],
  p:{'Program Unggulan':'1. "Jumat Bersih": setiap hari Jumat, semua siswa bergotong royong membersihkan sampah di kelas, halaman luar, dan lapangan.<br>2. "Jumat LISA (Lihat Sampah Ambil)": setiap hari Jumat, sebelum pulang sekolah, semua siswa wajib mengambil sampah di kelas maupun halaman luar untuk dibuang ke tempat sampah, agar SMP Negeri 3 Kaliwungu menjadi hijau, bersih, dan nyaman untuk ditempati.'}},
@@ -67,7 +67,7 @@ const M=[
  visi:'Mewujudkan MPK yang aspiratif, objektif, transparan, dan bertanggung jawab sebagai wadah perwakilan siswa serta pengawas organisasi yang berintegritas.',
  misi:['Menampung dan menyalurkan aspirasi siswa secara objektif kepada pihak terkait.','Mengawasi dan mengevaluasi program kerja OSIS secara berkala dan bertanggung jawab.','Membangun komunikasi yang terbuka antara MPK, OSIS, siswa, dan pihak sekolah.'],
  p:{'Program Unggulan':'"Aspirasi Siswa": Menyediakan wadah bagi siswa untuk menyampaikan saran, pendapat, dan permasalahan di lingkungan sekolah. Aspirasi yang terkumpul akan dibahas dan disampaikan kepada pihak terkait untuk dipertimbangkan serta ditindaklanjuti sesuai kewenangan dan ketentuan sekolah.'}},
-{id:2,n:'Annisa Salsabila Nugroho',kelas:'Kelas 8B',s:'MPK tiga aspirasi terjaga',e:'🦅',foto:'foto/mpk3.png',fotoPos:'center 4%',g:'from-rose-500 to-pink-500',col:'#f43f5e',
+{id:2,n:'Annisa Salsabila Nugroho',kelas:'Kelas 8B',s:'MPK tiga aspirasi terjaga',e:'🦅',foto:'foto/mpk3.png',fotoPos:'center 0%',g:'from-rose-500 to-pink-500',col:'#f43f5e',
  visi:'Menjadikan MPK sebagai wadah yang aktif, kreatif, dan peduli kepada sesama.',
  misi:['Menjalin komunikasi aktif kepada siswa, guru, dan OSIS.','Menerima dan menyalurkan aspirasi, ide, dan saran.'],
  p:{'Program Unggulan':'1. ART Week: seminggu sekali diadakan lomba menggambar.<br>2. Kartu ucapan apresiasi (Hand by MPK): MPK membuat 2-3 kartu ucapan dengan tulisan tangan dan gambar sendiri.<br>3. Kotak aspirasi digital: dibuatkan link Google Form/kotak aspirasi saran agar siswa dapat curhat secara anonim.'}}
@@ -79,6 +79,7 @@ const API='https://script.google.com/macros/s/AKfycbzPmFHow0tDF1OT4tZOutV1gAhqsD
 let S={view:'login',nisn:'',pin:'',votes:{o:[12,9,7],m:[10,11,7]},voted:{},me:null,res:null,key:'',busy:0,pick:{o:null,m:null}}, tab='vote', RISE='rise';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const nmH=c=>c.tim?c.tim.map(esc).join('<br>'):esc(c.n);
+const ph=(c,cls)=>{const pair=!!c.tim;return `<span class="relative inline-block overflow-hidden bg-white shrink-0 ${cls}"><span class="absolute inset-0 flex items-center justify-center text-2xl">${c.e}</span>${c.foto?`<img src="${esc(c.foto)}" alt="Foto ${esc(c.n)}" loading="lazy" draggable="false" onerror="this.remove()" class="absolute inset-0 w-full h-full object-cover" style="${pair?'object-position:center 10%':'object-position:center 0%;transform:scale(2.1);transform-origin:50% 22%'}">`:''}</span>`};
 async function api(body){
   const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
   try{const r=await fetch(API,{method:'POST',body:JSON.stringify(body),signal:ctl.signal});return await r.json()}
@@ -173,7 +174,7 @@ function resBlock(title,list,k){
  return `<section class="mb-6"><h3 class="text-2xl font-extrabold mb-3">${title}</h3>
   <div class="grid md:grid-cols-[1fr_200px] gap-6 items-center bg-white rounded-3xl p-5 md:p-7 shadow-lg">
    <div class="space-y-5">${list.map((c,i)=>`<div>
-    <div class="flex justify-between items-center font-bold"><span>${c.e} ${nmH(c)} ${v[i]===max&&tot(k)>0?'👑':''}</span><span><span class="cnt" data-v="${v[i]}">0</span> suara · ${pct[i]}%</span></div>
+    <div class="flex justify-between items-center font-bold"><span class="flex items-center gap-3">${ph(c,c.tim?'w-24 h-14 rounded-xl':'w-14 h-14 rounded-xl')}<span>${nmH(c)} ${v[i]===max&&tot(k)>0?'👑':''}</span></span><span><span class="cnt" data-v="${v[i]}">0</span> suara · ${pct[i]}%</span></div>
     <div class="h-6 bg-indigo-100 rounded-full overflow-hidden mt-1"><div class="bar h-full rounded-full shim" data-w="${pct[i]}" style="background:${c.col}"></div></div></div>`).join('')}</div>
    <div class="mx-auto w-44 h-44 rounded-full relative" style="background:conic-gradient(${stops})"><div class="absolute inset-6 rounded-full bg-white flex flex-col items-center justify-center"><b class="text-3xl fh">${tot(k)}</b><span class="text-xs text-slate-500">suara</span></div></div>
   </div></section>`;
@@ -241,14 +242,14 @@ const box=(inner,w='max-w-lg')=>`<div class="pop bg-white rounded-3xl w-full ${w
 
 function visiModal(c){
  const item=(t,b,o)=>`<div class="acc ${o?'open':''} border-2 border-indigo-100 rounded-2xl mb-2 overflow-hidden"><button data-act="acc" class="w-full flex justify-between items-center px-4 py-3 font-bold text-left bg-indigo-50"><span>${t}</span><span class="chev">▾</span></button><div class="acc-b"><div><p class="px-4 py-3">${b}</p></div></div></div>`;
- openM(box(`<div class="flex items-center gap-3 mb-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${c.g} flex items-center justify-center text-3xl">${c.e}</div><div><h3 class="text-2xl font-extrabold">${nmH(c)}</h3><p class="text-indigo-600 font-bold">"${c.s}"</p></div></div>
+ openM(box(`<div class="flex items-center gap-3 mb-4">${ph(c,c.tim?'w-24 h-14 rounded-2xl':'w-14 h-14 rounded-2xl')}<div><h3 class="text-2xl font-extrabold">${nmH(c)}</h3><p class="text-indigo-600 font-bold">"${c.s}"</p></div></div>
  ${item('🎯 Visi',c.visi,1)}${c.misi.map((m,i)=>item('Misi '+(i+1),m)).join('')}${item('📌 Program unggulan',Object.entries(c.p).map(([k,v])=>`<b>${k}:</b> ${v}`).join('<br>'))}`));
 }
 function compareModal(k){
  const L=E(k);
  openM(box(`<h3 class="text-2xl font-extrabold mb-1">Bandingkan ${k==='m'?'Calon Ketua MPK':'Paslon OSIS'}</h3><p class="text-slate-500 mb-4">Program kerja utama berdampingan.</p>
  <div class="overflow-x-auto"><div class="grid min-w-[620px] gap-2" style="grid-template-columns:90px repeat(3,1fr)">
-  <div></div>${L.map(c=>`<div class="rounded-2xl p-3 text-center text-white font-extrabold bg-gradient-to-br ${c.g}"><div class="text-3xl">${c.e}</div>${nmH(c)}</div>`).join('')}
+  <div></div>${L.map(c=>`<div class="rounded-2xl p-3 text-center text-white font-extrabold bg-gradient-to-br ${c.g}"><div class="flex justify-center mb-2">${ph(c,c.tim?'w-full h-20 rounded-xl':'w-20 h-20 rounded-xl')}</div>${nmH(c)}</div>`).join('')}
   <div class="font-bold self-center">Visi</div>${L.map(c=>`<div class="bg-indigo-50 rounded-xl p-3 text-sm">${c.visi}</div>`).join('')}
   ${Object.keys(L[0].p).map(k=>`<div class="font-bold self-center">${k}</div>`+L.map(c=>`<div class="bg-indigo-50 hover:bg-yellow-100 transition rounded-xl p-3 text-sm">${c.p[k]}</div>`).join('')).join('')}
  </div></div>`,'max-w-4xl'));
@@ -261,7 +262,7 @@ function fotoModal(c){
 }
 function reviewModal(){
  const p=S.pick;if(p.o==null||p.m==null)return;const o=C[p.o],m=M[p.m];
- const row=(t,c)=>`<div class="flex items-center gap-3 bg-indigo-50 rounded-2xl p-3"><span class="text-4xl">${c.e}</span><div><p class="text-xs font-bold text-indigo-500">${t}</p><p class="font-extrabold">${nmH(c)}</p></div></div>`;
+ const row=(t,c)=>`<div class="flex items-center gap-3 bg-indigo-50 rounded-2xl p-3">${ph(c,c.tim?'w-20 h-14 rounded-xl':'w-14 h-14 rounded-xl')}<div><p class="text-xs font-bold text-indigo-500">${t}</p><p class="font-extrabold">${nmH(c)}</p></div></div>`;
  openM(box(`<div class="text-center"><h3 class="text-2xl font-extrabold">Cek dulu pilihanmu ya!</h3>
  <div class="grid gap-3 mt-4 text-left">${row('KETUA & WAKIL OSIS',o)}${row('KETUA MPK',m)}</div>
  <p class="text-slate-600 mt-3">Pilihan tidak bisa diubah setelah dikirim.</p>
